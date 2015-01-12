@@ -23,6 +23,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.typesafe.config.Config;
+import org.hibernate.ogm.datastore.neo4j.Neo4jProperties;
 
 public class JpaHibernateModule extends AbstractModule {
 
@@ -31,17 +32,20 @@ public class JpaHibernateModule extends AbstractModule {
 	private final String password;
 	private final boolean isLogSql;
 	private final String jpaUnit;
+	private final String graphDBPath;
 
 	public JpaHibernateModule(final Injector configInjector) {
 		Preconditions.checkNotNull(configInjector);
 		final Config config = configInjector.getInstance(Config.class);
 		final Config metadataConfig = config.getConfig("dswarm.db.metadata");
+		final Config datahubConfig = config.getConfig("dswarm.db.datahub");
 
 		uri = metadataConfig.getString("uri");
 		username = metadataConfig.getString("username");
 		password = metadataConfig.getString("password");
 		isLogSql = metadataConfig.getBoolean("log-sql");
 		jpaUnit = metadataConfig.getString("jpa-unit");
+		graphDBPath = datahubConfig.getString("path");
 	}
 
 	@Override
@@ -53,7 +57,7 @@ public class JpaHibernateModule extends AbstractModule {
 
 		final Properties properties = new Properties();
 
-		properties.setProperty("javax.persistence.jdbc.url", uri);
+		/*properties.setProperty("javax.persistence.jdbc.url", uri);
 		properties.setProperty("javax.persistence.jdbc.user", username);
 		properties.setProperty("javax.persistence.jdbc.password", password);
 
@@ -87,7 +91,15 @@ public class JpaHibernateModule extends AbstractModule {
 		properties.setProperty("hibernate.show_sql", String.valueOf(isLogSql));
 		properties.setProperty("javax.persistence.jdbc.driver", "com.mysql.jdbc.Driver");
 		properties.setProperty("hibernate.jdbc.lob.non_contextual_creation", "true");
-		properties.setProperty("hibernate.ejb.entitymanager_factory_name", "DMPAppFactory");
+		properties.setProperty("hibernate.ejb.entitymanager_factory_name", "DMPAppFactory"); */
+
+		/* <property name="hibernate.ogm.datastore.provider" value="neo4j_embedded"/>
+			<property name="hibernate.ogm.neo4j.database_path" value="${graphdb.path}"/>
+			<property name="hibernate.search.default.directory_provider" value="ram"/> */
+
+		properties.setProperty("hibernate.ogm.datastore.provider", "neo4j_embedded");
+		properties.setProperty("hibernate.ogm.neo4j.database_path", graphDBPath);
+		//properties.setProperty("hibernate.search.default.directory_provider", "ram");
 
 		return properties;
 	}
