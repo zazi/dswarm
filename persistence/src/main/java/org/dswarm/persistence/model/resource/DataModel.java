@@ -40,7 +40,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "DATA_MODEL")
+@Table(name = "DATA_MODEL", schema = "dmp")
 public class DataModel extends ExtendedBasicDMPJPAObject {
 
 	/**
@@ -84,7 +84,7 @@ public class DataModel extends ExtendedBasicDMPJPAObject {
 		super(uuidArg);
 	}
 
-	protected DataModel() {
+	public DataModel() {
 
 	}
 

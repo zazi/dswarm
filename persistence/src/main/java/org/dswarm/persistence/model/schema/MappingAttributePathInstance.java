@@ -42,7 +42,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @DiscriminatorValue("MappingAttributePathInstance")
-@Table(name = "MAPPING_ATTRIBUTE_PATH_INSTANCE")
+@Table(name = "MAPPING_ATTRIBUTE_PATH_INSTANCE", schema = "dmp")
 public class MappingAttributePathInstance extends AttributePathInstance {
 
 	private static final Logger	LOG					= LoggerFactory.getLogger(MappingAttributePathInstance.class);
@@ -72,7 +72,7 @@ public class MappingAttributePathInstance extends AttributePathInstance {
 	/**
 	 * Creates a new mapping attribute path instance.
 	 */
-	protected MappingAttributePathInstance() {
+	public MappingAttributePathInstance() {
 
 		super(AttributePathInstanceType.MappingAttributePathInstance);
 	}

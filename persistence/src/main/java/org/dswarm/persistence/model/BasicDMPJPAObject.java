@@ -45,7 +45,7 @@ public abstract class BasicDMPJPAObject extends DMPObject {
 		super(uuidArg);
 	}
 
-	protected BasicDMPJPAObject() {
+	public BasicDMPJPAObject() {
 
 	}
 

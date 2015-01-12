@@ -628,7 +628,7 @@ public class InternalGDMGraphService implements InternalModelService {
 					+ "' from database endpoint.");
 		}
 
-		final String body = response.readEntity(String.class);
+		final String body = (String) response.getEntity();
 
 		final ObjectMapper gdmObjectMapper = Util.getJSONObjectMapper();
 

@@ -65,7 +65,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "COMPONENT")
+@Table(name = "COMPONENT", schema = "dmp")
 public class Component extends ExtendedBasicDMPJPAObject {
 
 	/**
@@ -144,7 +144,7 @@ public class Component extends ExtendedBasicDMPJPAObject {
 	// @JsonIgnore
 	// private Transformation transformation = null;
 
-	protected Component() {
+	public Component() {
 
 	}
 

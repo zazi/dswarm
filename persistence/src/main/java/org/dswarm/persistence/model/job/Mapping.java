@@ -52,7 +52,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "MAPPING")
+@Table(name = "MAPPING", schema = "dmp")
 public class Mapping extends BasicDMPJPAObject {
 
 	/**
@@ -96,7 +96,7 @@ public class Mapping extends BasicDMPJPAObject {
 		super(uuidArg);
 	}
 
-	protected Mapping() {
+	public Mapping() {
 
 		// y?
 	}

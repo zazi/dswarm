@@ -71,7 +71,7 @@ public abstract class DMPObject implements Serializable {
 		uuid = uuidArg;
 	}
 
-	protected DMPObject() {
+	public DMPObject() {
 
 	}
 

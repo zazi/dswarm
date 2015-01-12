@@ -46,7 +46,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @DiscriminatorValue("Transformation")
-@Table(name = "TRANSFORMATION")
+@Table(name = "TRANSFORMATION", schema = "dmp")
 public class Transformation extends Function {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Transformation.class);
@@ -69,7 +69,7 @@ public class Transformation extends Function {
 	/**
 	 * Creates a new transformation.
 	 */
-	protected Transformation() {
+	public Transformation() {
 
 		super(FunctionType.Transformation);
 	}

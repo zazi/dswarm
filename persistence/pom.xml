@@ -55,6 +55,11 @@
 			<id>neo4jRepo</id>
 			<url>http://m2.neo4j.org</url>
 		</repository>
+		<repository>
+			<id>riptano</id>
+			<name>riptano</name>
+			<url>http://mvn.riptano.com/content/repositories/public</url>
+		</repository>
 	</repositories>
 
 	<build>
@@ -113,9 +118,14 @@
 			<version>1.0.0.Final</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.ogm</groupId>
-			<artifactId>hibernate-ogm-neo4j</artifactId>
-			<version>4.1.0.Final</version>
+			<groupId>com.impetus.kundera.core</groupId>
+			<artifactId>kundera-core</artifactId>
+			<version>2.14</version>
+		</dependency>
+		<dependency>
+			<groupId>com.impetus.kundera.client</groupId>
+			<artifactId>kundera-neo4j</artifactId>
+			<version>2.14</version>
 		</dependency>
 		<!--<dependency>
 			<groupId>org.hibernate</groupId>

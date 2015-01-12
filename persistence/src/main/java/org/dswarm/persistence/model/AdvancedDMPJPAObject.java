@@ -42,7 +42,7 @@ public abstract class AdvancedDMPJPAObject extends BasicDMPJPAObject {
 	@Column(name = "URI", columnDefinition = "VARCHAR(255)", length = 255, unique = true)
 	private final String uri;
 
-	protected AdvancedDMPJPAObject() {
+	public AdvancedDMPJPAObject() {
 
 		uri = null;
 	}

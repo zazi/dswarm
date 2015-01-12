@@ -5,10 +5,10 @@ http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 			 version="2.0">
 	<persistence-unit name="DMPApp" transaction-type="RESOURCE_LOCAL">
 		<!-- <provider>org.hibernate.ejb.HibernatePersistence</provider> -->
-		<provider>org.hibernate.ogm.jpa.HibernateOgmPersistence</provider>
+		<provider>com.impetus.kundera.KunderaPersistence</provider>
 
 		<!-- classes -->
-		<class>org.dswarm.persistence.model.resource.Resource</class>
+		<!-- <class>org.dswarm.persistence.model.resource.Resource</class>
 		<class>org.dswarm.persistence.model.resource.Configuration</class>
 		<class>org.dswarm.persistence.model.resource.DataModel</class>
 		<class>org.dswarm.persistence.model.schema.Attribute</class>
@@ -23,7 +23,7 @@ http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 		<class>org.dswarm.persistence.model.job.Transformation</class>
 		<class>org.dswarm.persistence.model.schema.MappingAttributePathInstance</class>
 		<class>org.dswarm.persistence.model.schema.SchemaAttributePathInstance</class>
-		<class>org.dswarm.persistence.model.schema.ContentSchema</class>
+		<class>org.dswarm.persistence.model.schema.ContentSchema</class> -->
 
 		<shared-cache-mode>NONE</shared-cache-mode>
 	</persistence-unit>

@@ -23,7 +23,6 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.typesafe.config.Config;
-import org.hibernate.ogm.datastore.neo4j.Neo4jProperties;
 
 public class JpaHibernateModule extends AbstractModule {
 
@@ -93,13 +92,22 @@ public class JpaHibernateModule extends AbstractModule {
 		properties.setProperty("hibernate.jdbc.lob.non_contextual_creation", "true");
 		properties.setProperty("hibernate.ejb.entitymanager_factory_name", "DMPAppFactory"); */
 
-		/* <property name="hibernate.ogm.datastore.provider" value="neo4j_embedded"/>
-			<property name="hibernate.ogm.neo4j.database_path" value="${graphdb.path}"/>
-			<property name="hibernate.search.default.directory_provider" value="ram"/> */
+		/* < <property name="kundera.datastore.file.path" value="target/imdb.db" />
+            <property name="kundera.dialect" value="neo4j" />
+            <property name="kundera.client.lookup.class"
+                value="com.impetus.client.neo4j.Neo4JClientFactory" />
+            <property name="kundera.cache.provider.class"
+                value="com.impetus.kundera.cache.ehcache.EhCacheProvider" />
+            <property name="kundera.cache.config.resource" value="/ehcache-test.xml" />
+            <property name="kundera.client.property" value="kunderaNeo4JTest.xml"/>
+            <property name="kundera.transaction.resource.class" value="com.impetus.client.neo4j.Neo4JTransaction" />
+    */
 
-		properties.setProperty("hibernate.ogm.datastore.provider", "neo4j_embedded");
-		properties.setProperty("hibernate.ogm.neo4j.database_path", graphDBPath);
-		//properties.setProperty("hibernate.search.default.directory_provider", "ram");
+		properties.setProperty("kundera.datastore.file.path", "target/graph.db");
+		properties.setProperty("kundera.dialect", "neo4j");
+		properties.setProperty("kundera.client.lookup.class", "com.impetus.client.neo4j.Neo4JClientFactory");
+		properties.setProperty("kundera.transaction.resource.class", "com.impetus.client.neo4j.Neo4JTransaction");
+		properties.setProperty("kundera.ddl.auto.prepare", "update");
 
 		return properties;
 	}

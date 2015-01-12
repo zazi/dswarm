@@ -59,7 +59,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "DATA_SCHEMA")
+@Table(name = "DATA_SCHEMA", schema = "dmp")
 public class Schema extends BasicDMPJPAObject {
 
 	/**
@@ -124,7 +124,7 @@ public class Schema extends BasicDMPJPAObject {
 	@XmlElement(name = "content_schema")
 	private ContentSchema contentSchema;
 
-	protected Schema() {
+	public Schema() {
 
 	}
 

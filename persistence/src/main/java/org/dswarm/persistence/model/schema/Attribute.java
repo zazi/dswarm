@@ -31,7 +31,7 @@ import org.dswarm.persistence.model.AdvancedDMPJPAObject;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "ATTRIBUTE")
+@Table(name = "ATTRIBUTE", schema = "dmp")
 public class Attribute extends AdvancedDMPJPAObject {
 
 	/**
@@ -51,7 +51,7 @@ public class Attribute extends AdvancedDMPJPAObject {
 	/**
 	 * Creates new attribute with no identifier.
 	 */
-	protected Attribute() {
+	public Attribute() {
 
 	}
 

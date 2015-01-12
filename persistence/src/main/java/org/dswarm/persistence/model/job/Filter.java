@@ -34,7 +34,7 @@ import org.dswarm.persistence.model.BasicDMPJPAObject;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "FILTER")
+@Table(name = "FILTER", schema = "dmp")
 public class Filter extends BasicDMPJPAObject {
 
 	/**
@@ -53,7 +53,7 @@ public class Filter extends BasicDMPJPAObject {
 		super(uuidArg);
 	}
 
-	protected Filter() {
+	public Filter() {
 
 	}
 

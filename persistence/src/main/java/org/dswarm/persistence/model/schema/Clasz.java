@@ -33,7 +33,7 @@ import org.dswarm.persistence.model.AdvancedDMPJPAObject;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "CLASS")
+@Table(name = "CLASS", schema = "dmp")
 public class Clasz extends AdvancedDMPJPAObject {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Clasz.class);
@@ -46,7 +46,7 @@ public class Clasz extends AdvancedDMPJPAObject {
 	/**
 	 * Creates new class with no identifier.
 	 */
-	protected Clasz() {
+	public Clasz() {
 
 		//super(null);
 	}

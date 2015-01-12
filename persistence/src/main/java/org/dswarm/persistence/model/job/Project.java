@@ -47,7 +47,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "PROJECT")
+@Table(name = "PROJECT", schema = "dmp")
 public class Project extends ExtendedBasicDMPJPAObject {
 
 	/**
@@ -104,7 +104,7 @@ public class Project extends ExtendedBasicDMPJPAObject {
 		super(uuidArg);
 	}
 
-	protected Project() {
+	public Project() {
 
 	}
 

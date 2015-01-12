@@ -52,7 +52,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "ATTRIBUTE_PATH_INSTANCE_TYPE", discriminatorType = DiscriminatorType.STRING)
-@Table(name = "ATTRIBUTE_PATH_INSTANCE")
+@Table(name = "ATTRIBUTE_PATH_INSTANCE", schema = "dmp")
 public abstract class AttributePathInstance extends BasicDMPJPAObject {
 
 	/**
@@ -79,7 +79,7 @@ public abstract class AttributePathInstance extends BasicDMPJPAObject {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private AttributePath				attributePath;
 
-	protected AttributePathInstance() {
+	public AttributePathInstance() {
 
 		// just for JPA
 	}
