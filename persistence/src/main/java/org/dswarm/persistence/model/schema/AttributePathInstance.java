@@ -52,7 +52,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "ATTRIBUTE_PATH_INSTANCE_TYPE", discriminatorType = DiscriminatorType.STRING)
-@Table(name = "ATTRIBUTE_PATH_INSTANCE", schema = "dmp")
+@Table(name = "ATTRIBUTE_PATH_INSTANCE", schema = "dmp@DMPApp")
 public abstract class AttributePathInstance extends BasicDMPJPAObject {
 
 	/**

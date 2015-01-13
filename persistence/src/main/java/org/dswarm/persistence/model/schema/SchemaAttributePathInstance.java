@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @DiscriminatorValue("SchemaAttributePathInstance")
-@Table(name = "SCHEMA_ATTRIBUTE_PATH_INSTANCE", schema = "dmp")
+@Table(name = "SCHEMA_ATTRIBUTE_PATH_INSTANCE", schema = "dmp@DMPApp")
 public class SchemaAttributePathInstance extends AttributePathInstance {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SchemaAttributePathInstance.class);

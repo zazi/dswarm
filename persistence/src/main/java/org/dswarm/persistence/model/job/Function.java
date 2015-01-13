@@ -66,7 +66,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "FUNCTION_TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("Function")
-@Table(name = "FUNCTION", schema = "dmp")
+@Table(name = "FUNCTION", schema = "dmp@DMPApp")
 public class Function extends ExtendedBasicDMPJPAObject {
 
 	/**

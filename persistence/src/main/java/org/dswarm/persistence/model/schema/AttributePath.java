@@ -58,7 +58,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "ATTRIBUTE_PATH", schema = "dmp")
+@Table(name = "ATTRIBUTE_PATH", schema = "dmp@DMPApp")
 public class AttributePath extends DMPObject {
 
 	/**

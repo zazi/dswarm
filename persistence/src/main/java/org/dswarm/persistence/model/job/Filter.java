@@ -34,7 +34,7 @@ import org.dswarm.persistence.model.BasicDMPJPAObject;
 @Entity
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "FILTER", schema = "dmp")
+@Table(name = "FILTER", schema = "dmp@DMPApp")
 public class Filter extends BasicDMPJPAObject {
 
 	/**

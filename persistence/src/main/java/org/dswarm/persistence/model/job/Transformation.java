@@ -46,7 +46,7 @@ import org.dswarm.persistence.util.DMPPersistenceUtil;
 // @Cacheable(true)
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @DiscriminatorValue("Transformation")
-@Table(name = "TRANSFORMATION", schema = "dmp")
+@Table(name = "TRANSFORMATION", schema = "dmp@DMPApp")
 public class Transformation extends Function {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Transformation.class);

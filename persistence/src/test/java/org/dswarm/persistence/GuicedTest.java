@@ -69,9 +69,9 @@ public abstract class GuicedTest {
 		GuicedTest.tearDown();
 		GuicedTest.startUp();
 		initObjects();
-		maintainDBService.initDB();
+		//maintainDBService.initDB();
 		//		maintainDBService.truncateTables();
-		InternalGDMGraphServiceTestUtils.cleanGraphDB();
+		//InternalGDMGraphServiceTestUtils.cleanGraphDB();
 	}
 
 	@After
@@ -80,9 +80,9 @@ public abstract class GuicedTest {
 		GuicedTest.tearDown();
 		GuicedTest.startUp();
 		initObjects();
-		maintainDBService.initDB();
+		//maintainDBService.initDB();
 		//		maintainDBService.truncateTables();
-		InternalGDMGraphServiceTestUtils.cleanGraphDB();
+		//InternalGDMGraphServiceTestUtils.cleanGraphDB();
 	}
 
 	protected void initObjects() {
