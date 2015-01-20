@@ -38,9 +38,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +108,7 @@ public class Schema extends BasicDMPJPAObject {
 	@Lob
 	@Access(AccessType.FIELD)
 	@Column(name = "SCHEMA_ATTRIBUTE_PATH_INSTANCES", columnDefinition = "LONGBLOB")
-	private String attributePathsJsonString;
+	private byte[] attributePathsJsonString;
 
 	/**
 	 * The record class of the schema.
@@ -400,18 +403,18 @@ public class Schema extends BasicDMPJPAObject {
 	}
 
 	private void ensureInitializedOrderedAttributePaths() {
-		if (!isOrderedAttributePathsInitialized) {
-			initializedAttributePaths(true);
-			ensureOrderedAttributePaths();
+		if (orderedAttributePaths == null) {
+			final Optional<Map<String, SchemaAttributePathInstance>> paths = initializedAttributePaths(true);
+			orderedAttributePaths = paths.or(Maps.<String, SchemaAttributePathInstance>newLinkedHashMap());
 		}
 	}
 
 	private void tryInitializeOrderedAttributePaths() {
-		initializedAttributePaths(false);
-		ensureOrderedAttributePaths();
+		final Optional<Map<String, SchemaAttributePathInstance>> paths = initializedAttributePaths(false);
+		orderedAttributePaths = paths.orNull();
 	}
 
-	private void initializedAttributePaths(final boolean fromScratch) {
+	private Optional<Map<String, SchemaAttributePathInstance>> initializedAttributePaths(final boolean fromScratch) {
 		if (orderedAttributePathsJson == null && !isOrderedAttributePathsInitialized) {
 
 			if (attributePathsJsonString == null) {
@@ -424,12 +427,12 @@ public class Schema extends BasicDMPJPAObject {
 					isOrderedAttributePathsInitialized = true;
 				}
 
-				return;
+				return Optional.fromNullable(orderedAttributePaths);
 			}
 
 			try {
 				orderedAttributePaths = Maps.newLinkedHashMap();
-				orderedAttributePathsJson = DMPPersistenceUtil.getJSONArray(attributePathsJsonString);
+				orderedAttributePathsJson = DMPPersistenceUtil.getJSONArray(StringUtils.toEncodedString(attributePathsJsonString, Charsets.UTF_8));
 
 				if (orderedAttributePathsJson != null) {
 
@@ -445,6 +448,8 @@ public class Schema extends BasicDMPJPAObject {
 			}
 			isOrderedAttributePathsInitialized = true;
 		}
+
+		return Optional.fromNullable(orderedAttributePaths);
 	}
 
 	private void refreshAttributePathsString() {
@@ -456,7 +461,7 @@ public class Schema extends BasicDMPJPAObject {
 		}
 
 		if (orderedAttributePathsJson != null && orderedAttributePathsJson.size() > 0) {
-			attributePathsJsonString = orderedAttributePathsJson.toString();
+			attributePathsJsonString = orderedAttributePathsJson.toString().getBytes(Charsets.UTF_8);
 		} else {
 			attributePathsJsonString = null;
 		}
