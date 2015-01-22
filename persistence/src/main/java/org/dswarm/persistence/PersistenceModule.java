@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.dswarm.init.util.DMPUtil;
 import org.dswarm.persistence.model.job.Transformation;
 import org.dswarm.persistence.model.job.utils.TransformationDeserializer;
+import org.dswarm.persistence.model.resource.Configuration;
+import org.dswarm.persistence.model.resource.utils.ConfigurationDeserializer;
 import org.dswarm.persistence.service.InternalModelServiceFactory;
 import org.dswarm.persistence.service.MaintainDBService;
 import org.dswarm.persistence.service.UUIDService;
@@ -117,6 +119,7 @@ public class PersistenceModule extends AbstractModule {
 			super("DmpDeserializerModule");
 
 			addDeserializer(Transformation.class, new TransformationDeserializer());
+			addDeserializer(Configuration.class, new ConfigurationDeserializer());
 		}
 	}
 }

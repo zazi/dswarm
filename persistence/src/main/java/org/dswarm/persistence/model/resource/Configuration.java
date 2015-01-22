@@ -341,4 +341,32 @@ public class Configuration extends ExtendedBasicDMPJPAObject {
 				&& Objects.equal(((Configuration) obj).getParameters(), getParameters())
 				&& Objects.equal(((Configuration) obj).getResources(), getResources());
 	}
+
+	/**
+	 * Create a new {@code Configuration} as a copy from a existing configuration with a specific id. <br>
+	 * <b>Use with care!</b>
+	 * <p>
+	 * This factory is to be used by {@link org.dswarm.persistence.model.resource.utils.ConfigurationDeserializer} to avoid reflection
+	 * based access to a private/protected field, since the Json deserializer needs a way to set the id that was provided by the
+	 * JSON.
+	 * </p>
+	 * <p>
+	 * The id is otherwise assigned by the database/Hibernate layer. You should never need this outside of
+	 * {@code ConfigurationDeserializer}.
+	 * </p>
+	 *
+	 * @param configuration the base configuration that will be copied
+	 * @param uuid           the target configuration's id value
+	 * @return a new configuration with the given id and all other attributes copied from the provided configuration.
+	 */
+	public static Configuration withId(final Configuration configuration, final String uuid) {
+		final Configuration newTransformation = new Configuration(uuid);
+
+		newTransformation.setResources(configuration.getResources());
+		newTransformation.setParameters(configuration.getParameters());
+		newTransformation.setDescription(configuration.getDescription());
+		newTransformation.setName(configuration.getName());
+
+		return newTransformation;
+	}
 }

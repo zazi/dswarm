@@ -404,4 +404,33 @@ public class Resource extends ExtendedBasicDMPJPAObject {
 				&& Objects.equal(((Resource) obj).getAttributes(), getAttributes())
 				&& Objects.equal(((Resource) obj).getConfigurations(), getConfigurations());
 	}
+
+	/**
+	 * Create a new {@code Resource} as a copy from a existing resource with a specific id. <br>
+	 * <b>Use with care!</b>
+	 * <p>
+	 * This factory is to be used by {@link org.dswarm.persistence.model.resource.utils.ConfigurationDeserializer} to avoid reflection
+	 * based access to a private/protected field, since the Json deserializer needs a way to set the id that was provided by the
+	 * JSON.
+	 * </p>
+	 * <p>
+	 * The id is otherwise assigned by the database/Hibernate layer. You should never need this outside of
+	 * {@code ConfigurationDeserializer}.
+	 * </p>
+	 *
+	 * @param resource the base resource that will be copied
+	 * @param uuid     the target resource's id value
+	 * @return a new resource with the given id and all other attributes copied from the provided resource.
+	 */
+	public static Resource withId(final Resource resource, final String uuid) {
+		final Resource newComponent = new Resource(uuid);
+
+		newComponent.setConfigurations(resource.getConfigurations());
+		newComponent.setAttributes(resource.getAttributes());
+		newComponent.setType(resource.getType());
+		newComponent.setDescription(resource.getDescription());
+		newComponent.setName(resource.getName());
+
+		return newComponent;
+	}
 }
