@@ -21,18 +21,13 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.eclipse.persistence.annotations.Cache;
-import org.eclipse.persistence.config.CacheIsolationType;
 
 /**
  * The most abstract POJO class, i.e., this class is intended for inheritance. It only provides a getter for the identifier and
@@ -43,7 +38,6 @@ import org.eclipse.persistence.config.CacheIsolationType;
 @XmlRootElement
 @MappedSuperclass
 @Cacheable(false)
-@Cache(isolation= CacheIsolationType.ISOLATED)
 public abstract class DMPObject implements Serializable {
 
 	/**
@@ -51,16 +45,16 @@ public abstract class DMPObject implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-//	/**
-//	 * The db-generated identifier of the entity.
-//	 * TODO: make (generated) id private
-//	 */
-//	@Id
-//	@UniqueConstraint()
-//	@Access(AccessType.FIELD)
-//	@GeneratedValue(strategy = GenerationType.AUTO)
-//	@Column(name = "ID")
-//	protected Long id;
+	//	/**
+	//	 * The db-generated identifier of the entity.
+	//	 * TODO: make (generated) id private
+	//	 */
+	//	@Id
+	//	@UniqueConstraint()
+	//	@Access(AccessType.FIELD)
+	//	@GeneratedValue(strategy = GenerationType.AUTO)
+	//	@Column(name = "ID")
+	//	protected Long id;
 
 	/**
 	 * can we make this final as well? how deals JPA with this?
@@ -81,18 +75,18 @@ public abstract class DMPObject implements Serializable {
 	}
 
 	//	/**
-//	 * Gets the db-generated identifier of this object.
-//	 *
-//	 * @return the db-generated identifier of this object
-//	 */
-//	public Long getId() {
-//
-//		return id;
-//	}
+	//	 * Gets the db-generated identifier of this object.
+	//	 *
+	//	 * @return the db-generated identifier of this object
+	//	 */
+	//	public Long getId() {
+	//
+	//		return id;
+	//	}
 
 	public String getUuid() {
 
-		if(uuid == null) {
+		if (uuid == null) {
 
 			// TODO: throw exception???
 		}

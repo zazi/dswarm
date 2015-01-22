@@ -4,7 +4,8 @@
 http://java.sun.com/xml/ns/persistence/persistence_2_1.xsd"
 	version="2.1">
 	<persistence-unit name="DMPApp" transaction-type="RESOURCE_LOCAL">
-		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<!-- <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<!-- classes -->
 		<class>org.dswarm.persistence.model.DMPObject</class>

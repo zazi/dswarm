@@ -20,9 +20,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.persistence.annotations.Cache;
-import org.eclipse.persistence.config.CacheIsolationType;
-
 import org.dswarm.persistence.model.AdvancedDMPJPAObject;
 
 /**
@@ -37,7 +34,6 @@ import org.dswarm.persistence.model.AdvancedDMPJPAObject;
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "ATTRIBUTE")
 @Cacheable(false)
-@Cache(isolation= CacheIsolationType.ISOLATED)
 public class Attribute extends AdvancedDMPJPAObject {
 
 	/**
@@ -52,7 +48,7 @@ public class Attribute extends AdvancedDMPJPAObject {
 	/**
 	 *
 	 */
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Creates new attribute with no identifier.
@@ -79,7 +75,7 @@ public class Attribute extends AdvancedDMPJPAObject {
 	/**
 	 * Creates a new attribute with the given identifier and name.
 	 *
-	 * @param id an attribute identifier
+	 * @param id   an attribute identifier
 	 * @param name an attribute name
 	 */
 	public Attribute(final String uuid, final String uriArg, final String name) {
