@@ -106,6 +106,7 @@ public class ResourcesResource {
 
 	private final ObjectMapper  objectMapper;
 	private final DataModelUtil dataModelUtil;
+	private final Provider<CSVResourceFlowFactory> flowFactory2;
 
 	/**
 	 * Creates a new resource (controller service) for {@link Resource}s with the provider of the resource persistence service,
@@ -118,15 +119,20 @@ public class ResourcesResource {
 	 * @param dataModelUtilArg                the data model util
 	 */
 	@Inject
-	public ResourcesResource(final ObjectMapper objectMapperArg, final DMPControllerUtils controllerUtilsArg,
-			final Provider<ResourceService> resourceServiceProviderArg, final Provider<ConfigurationService> configurationServiceProviderArg,
-			final DataModelUtil dataModelUtilArg) {
+	public ResourcesResource(
+			final ObjectMapper objectMapperArg,
+			final DMPControllerUtils controllerUtilsArg,
+			final Provider<ResourceService> resourceServiceProviderArg,
+			final Provider<ConfigurationService> configurationServiceProviderArg,
+			final DataModelUtil dataModelUtilArg,
+			final Provider<CSVResourceFlowFactory> flowFactory2) {
 
 		controllerUtils = controllerUtilsArg;
 		resourceServiceProvider = resourceServiceProviderArg;
 		configurationServiceProvider = configurationServiceProviderArg;
 		objectMapper = objectMapperArg;
 		dataModelUtil = dataModelUtilArg;
+		this.flowFactory2 = flowFactory2;
 	}
 
 	/**
@@ -135,7 +141,7 @@ public class ResourcesResource {
 	 * @param responseContent a response message
 	 * @return the response
 	 */
-	private Response buildResponse(final String responseContent) {
+	private static Response buildResponse(final String responseContent) {
 
 		return Response.ok(responseContent).build();
 	}
@@ -148,7 +154,7 @@ public class ResourcesResource {
 	 * @return the response
 	 * @throws DMPControllerException
 	 */
-	private Response buildResponseCreated(final String responseContent, final URI responseURI, final RetrievalType type, final String objectType)
+	private static Response buildResponseCreated(final String responseContent, final URI responseURI, final RetrievalType type, final String objectType)
 			throws DMPControllerException {
 
 		final ResponseBuilder responseBuilder;
@@ -167,7 +173,7 @@ public class ResourcesResource {
 				break;
 			default:
 
-				ResourcesResource.LOG.debug("something went wrong, while evaluating the retrieval type of the " + objectType);
+				ResourcesResource.LOG.debug("something went wrong, while evaluating the retrieval type of the {}", objectType);
 
 				throw new DMPControllerException("something went wrong, while evaluating the retrieval type of the " + objectType);
 		}
@@ -201,7 +207,7 @@ public class ResourcesResource {
 			@ApiParam("resource description") @FormDataParam("description") final String description,
 			@ApiParam("resource uuid") @FormDataParam("uuid") final String uuid) throws DMPControllerException {
 
-		ResourcesResource.LOG.debug("try to create new resource '" + name + "' for file '" + fileDetail.getFileName() + "'");
+		ResourcesResource.LOG.debug("try to create new resource '{}' for file '{}'", name, fileDetail.getFileName());
 
 		final ProxyResource proxyResource = createResource(uploadedInputStream, fileDetail, name, description, uuid);
 
@@ -215,8 +221,8 @@ public class ResourcesResource {
 			throw new DMPControllerException("couldn't create new resource");
 		}
 
-		ResourcesResource.LOG.debug("created new resource '" + name + "' for file '" + fileDetail.getFileName() + "' ");
-		ResourcesResource.LOG.trace("= '" + ToStringBuilder.reflectionToString(resource) + "'");
+		ResourcesResource.LOG.debug("created new resource '{}' for file '{}' ", name, fileDetail.getFileName());
+		ResourcesResource.LOG.trace("= '{}'", ToStringBuilder.reflectionToString(resource));
 
 		final String resourceJSON;
 
@@ -228,10 +234,10 @@ public class ResourcesResource {
 		}
 
 		final URI baseURI = uri.getRequestUri();
-		final URI resourceURI = URI.create(baseURI.toString() + "/" + resource.getUuid());
+		final URI resourceURI = URI.create(baseURI + "/" + resource.getUuid());
 
-		ResourcesResource.LOG.debug("created new resource at '" + resourceURI.toString() + "' with content ");
-		ResourcesResource.LOG.trace("'" + resourceJSON + "'");
+		ResourcesResource.LOG.debug("created new resource at '{}' with content ", resourceURI);
+		ResourcesResource.LOG.trace("'{}'", resourceJSON);
 
 		return buildResponseCreated(resourceJSON, resourceURI, proxyResource.getType(), "resource");
 	}
@@ -269,7 +275,7 @@ public class ResourcesResource {
 		}
 
 		ResourcesResource.LOG.debug("got all resources ");
-		ResourcesResource.LOG.trace("= '" + ToStringBuilder.reflectionToString(resources) + "'");
+		ResourcesResource.LOG.trace("= '{}'", ToStringBuilder.reflectionToString(resources));
 
 		final String resourcesJSON;
 
@@ -277,11 +283,11 @@ public class ResourcesResource {
 
 			resourcesJSON = objectMapper.writeValueAsString(resources);
 		} catch (final JsonProcessingException e) {
-			throw new DMPControllerException("couldn't transform resources list object to JSON string.\n" + e.getMessage());
+			throw new DMPControllerException("couldn't transform resources list object to JSON string.\n", e);
 		}
 
 		ResourcesResource.LOG.debug("return all resources ");
-		ResourcesResource.LOG.trace("'" + resourcesJSON + "'");
+		ResourcesResource.LOG.trace("'{}'", resourcesJSON);
 
 		return buildResponse(resourcesJSON);
 	}
@@ -319,8 +325,8 @@ public class ResourcesResource {
 			throw new DMPControllerException("couldn't transform resource object to JSON string.\n" + e.getMessage());
 		}
 
-		ResourcesResource.LOG.debug("return resource with uuid '" + uuid + "' and content ");
-		ResourcesResource.LOG.trace("'" + resourceJSON + "'");
+		ResourcesResource.LOG.debug("return resource with uuid '{}' and content ", uuid);
+		ResourcesResource.LOG.trace("'{}'", resourceJSON);
 
 		return buildResponse(resourceJSON);
 	}
@@ -360,7 +366,7 @@ public class ResourcesResource {
 
 		final Resource resource = resourceOptional.get();
 
-		ResourcesResource.LOG.debug("try to update resource '" + name + "' for file '" + fileDetail.getFileName() + "'");
+		ResourcesResource.LOG.debug("try to update resource '{}' for file '{}'", name, fileDetail.getFileName());
 
 		final ProxyResource proxyResource = refreshResource(resource, uploadedInputStream, fileDetail, name, description);
 
@@ -375,8 +381,8 @@ public class ResourcesResource {
 			throw new DMPControllerException("couldn't transform resource object to JSON string");
 		}
 
-		ResourcesResource.LOG.debug("updated resource with uuid '" + uuid + "' ");
-		ResourcesResource.LOG.trace("and JSON content '" + resourceJSON + "'");
+		ResourcesResource.LOG.debug("updated resource with uuid '{}' ", uuid);
+		ResourcesResource.LOG.trace("and JSON content '{}'", resourceJSON);
 
 		return buildResponse(resourceJSON);
 	}
@@ -399,13 +405,13 @@ public class ResourcesResource {
 	public Response deleteResource(@ApiParam(value = "data resource identifier", required = true) @PathParam("uuid") final String uuid)
 			throws DMPControllerException {
 
-		ResourcesResource.LOG.debug("try to delete resource with uuid '" + uuid + "'");
+		ResourcesResource.LOG.debug("try to delete resource with uuid '{}'", uuid);
 
 		Optional<Resource> resourceOptional = dataModelUtil.fetchResource(uuid);
 
 		if (!resourceOptional.isPresent()) {
 
-			ResourcesResource.LOG.debug("couldn't find resource '" + uuid + "'");
+			ResourcesResource.LOG.debug("couldn't find resource '{}'", uuid);
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
@@ -415,11 +421,11 @@ public class ResourcesResource {
 
 		if (resourceOptional.isPresent()) {
 
-			ResourcesResource.LOG.debug("couldn't delete resource '" + uuid + "'");
+			ResourcesResource.LOG.debug("couldn't delete resource '{}'", uuid);
 			return Response.status(Status.CONFLICT).build();
 		}
 
-		ResourcesResource.LOG.debug("deletion of resource with uuid '" + uuid + "' was successful");
+		ResourcesResource.LOG.debug("deletion of resource with uuid '{}' was successful", uuid);
 
 		return Response.status(Status.NO_CONTENT).build();
 	}
@@ -485,7 +491,7 @@ public class ResourcesResource {
 				}
 			});
 		} catch (final IOException e) {
-			throw new DMPControllerException("couldn't read file contents.\n" + e.getMessage());
+			throw new DMPControllerException("couldn't read file contents", e);
 		}
 
 		final Map<String, Object> jsonMap = new HashMap<>(1);
@@ -521,7 +527,7 @@ public class ResourcesResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getResourceConfigurations(@ApiParam(value = "data resource identifier", required = true) @PathParam("uuid") final String uuid)
 			throws DMPControllerException {
-		ResourcesResource.LOG.debug("try to get resource configurations for resource with uuid '" + uuid + "'");
+		ResourcesResource.LOG.debug("try to get resource configurations for resource with uuid '{}'", uuid);
 
 		final Optional<Resource> resourceOptional = dataModelUtil.fetchResource(uuid);
 
@@ -531,19 +537,19 @@ public class ResourcesResource {
 
 		final Resource resource = resourceOptional.get();
 
-		ResourcesResource.LOG.debug("got resource with uuid '" + uuid + "' for resource configurations retrieval ");
-		ResourcesResource.LOG.trace("= '" + ToStringBuilder.reflectionToString(resource) + "'");
+		ResourcesResource.LOG.debug("got resource with uuid '{}' for resource configurations retrieval ", uuid);
+		ResourcesResource.LOG.trace("= '{}'", ToStringBuilder.reflectionToString(resource));
 
 		final Set<Configuration> configurations = resource.getConfigurations();
 
 		if (configurations == null || configurations.isEmpty()) {
 
-			ResourcesResource.LOG.debug("couldn't find configurations for resource '" + uuid + "'; or there are no configurations for this resource");
+			ResourcesResource.LOG.debug("couldn't find configurations for resource '{}'; or there are no configurations for this resource", uuid);
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
-		ResourcesResource.LOG.debug("got resource configurations for resource with uuid '" + uuid + "' ");
-		ResourcesResource.LOG.trace("= '" + ToStringBuilder.reflectionToString(configurations) + "'");
+		ResourcesResource.LOG.debug("got resource configurations for resource with uuid '{}' ", uuid);
+		ResourcesResource.LOG.trace("= '{}'", ToStringBuilder.reflectionToString(configurations));
 
 		final String configurationsJSON;
 
@@ -554,8 +560,8 @@ public class ResourcesResource {
 			throw new DMPControllerException("couldn't transform resource configurations set to JSON string.\n" + e.getMessage());
 		}
 
-		ResourcesResource.LOG.debug("return resource configurations for resource with uuid '" + uuid + "' ");
-		ResourcesResource.LOG.trace("and content '" + configurationsJSON + "'");
+		ResourcesResource.LOG.debug("return resource configurations for resource with uuid '{}' ", uuid);
+		ResourcesResource.LOG.trace("and content '{}'", configurationsJSON);
 		return buildResponse(configurationsJSON);
 	}
 
@@ -585,7 +591,7 @@ public class ResourcesResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addConfiguration(@ApiParam(value = "data resource identifier", required = true) @PathParam("uuid") final String uuid,
 			@ApiParam(value = "configuration (as JSON)", required = true) final String jsonObjectString) throws DMPControllerException {
-		ResourcesResource.LOG.debug("try to create new configuration for resource with uuid '" + uuid + "'");
+		ResourcesResource.LOG.debug("try to create new configuration for resource with uuid '{}'", uuid);
 
 		final Optional<Resource> resourceOptional = dataModelUtil.fetchResource(uuid);
 
@@ -593,7 +599,7 @@ public class ResourcesResource {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
-		ResourcesResource.LOG.debug("try to add new configuration to resource with uuid '" + uuid + "'");
+		ResourcesResource.LOG.debug("try to add new configuration to resource with uuid '{}'", uuid);
 
 		final Resource resource = resourceOptional.get();
 
@@ -601,7 +607,7 @@ public class ResourcesResource {
 
 		if (proxyConfiguration == null) {
 
-			ResourcesResource.LOG.debug("couldn't add configuration to resource with uuid '" + uuid + "'");
+			ResourcesResource.LOG.debug("couldn't add configuration to resource with uuid '{}'", uuid);
 			throw new DMPControllerException("couldn't add configuration to resource with uuid '" + uuid + "'");
 		}
 
@@ -609,12 +615,12 @@ public class ResourcesResource {
 
 		if (configuration == null) {
 
-			ResourcesResource.LOG.debug("couldn't add configuration to resource with uuid '" + uuid + "'");
+			ResourcesResource.LOG.debug("couldn't add configuration to resource with uuid '{}'", uuid);
 			throw new DMPControllerException("couldn't add configuration to resource with uuid '" + uuid + "'");
 		}
 
-		ResourcesResource.LOG.debug("added new configuration to resource with uuid '" + uuid + "' ");
-		ResourcesResource.LOG.trace("= '" + ToStringBuilder.reflectionToString(configuration) + "'");
+		ResourcesResource.LOG.debug("added new configuration to resource with uuid '{}' ", uuid);
+		ResourcesResource.LOG.trace("= '{}'", ToStringBuilder.reflectionToString(configuration));
 
 		final String configurationJSON;
 
@@ -626,10 +632,10 @@ public class ResourcesResource {
 		}
 
 		final URI baseURI = uri.getRequestUri();
-		final URI configurationURI = URI.create(baseURI.toString() + "/" + configuration.getUuid());
+		final URI configurationURI = URI.create(baseURI + "/" + configuration.getUuid());
 
-		ResourcesResource.LOG.debug("return new configuration at '" + configurationURI.toString() + "' ");
-		ResourcesResource.LOG.trace("with content '" + configurationJSON + "'");
+		ResourcesResource.LOG.debug("return new configuration at '{}' ", configurationURI);
+		ResourcesResource.LOG.trace("with content '{}'", configurationJSON);
 		return buildResponseCreated(configurationJSON, configurationURI, proxyConfiguration.getType(), "configuration");
 	}
 
@@ -665,11 +671,11 @@ public class ResourcesResource {
 
 			configurationJSON = objectMapper.writeValueAsString(configurationOptional.get());
 		} catch (final JsonProcessingException e) {
-			throw new DMPControllerException("couldn't transform resource configuration to JSON string.\n" + e.getMessage());
+			throw new DMPControllerException("couldn't transform resource configuration to JSON string", e);
 		}
 
-		ResourcesResource.LOG.debug("return configuration with uuid '" + configurationUuid + "' for resource with uuid '" + uuid + "' ");
-		ResourcesResource.LOG.trace("and content '" + configurationJSON + "'");
+		ResourcesResource.LOG.debug("return configuration with uuid '{}' for resource with uuid '{}' ", configurationUuid, uuid);
+		ResourcesResource.LOG.trace("and content '{}'", configurationJSON);
 		return buildResponse(configurationJSON);
 	}
 
@@ -694,8 +700,8 @@ public class ResourcesResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response csvPreviewConfiguration(@ApiParam(value = "data resource identifier", required = true) @PathParam("uuid") final String uuid,
 			@ApiParam(value = "configuration (as JSON)", required = true) final String jsonObjectString) throws DMPControllerException {
-		ResourcesResource.LOG.debug("try to apply configuration for resource with uuid '" + uuid + "'");
-		ResourcesResource.LOG.debug("try to receive resource with uuid '" + uuid + "' for csv configuration preview");
+		ResourcesResource.LOG.debug("try to apply configuration for resource with uuid '{}'", uuid);
+		ResourcesResource.LOG.debug("try to receive resource with uuid '{}' for csv configuration preview", uuid);
 
 		final Optional<Resource> resourceOptional = dataModelUtil.fetchResource(uuid);
 
@@ -705,19 +711,19 @@ public class ResourcesResource {
 
 		final Resource resource = resourceOptional.get();
 
-		ResourcesResource.LOG.debug("found resource with uuid '" + uuid + "' for csv configuration preview ");
-		ResourcesResource.LOG.trace("= '" + ToStringBuilder.reflectionToString(resource) + "'");
-		ResourcesResource.LOG.debug("try to apply configuration to resource with uuid '" + uuid + "'");
+		ResourcesResource.LOG.debug("found resource with uuid '{}' for csv configuration preview ", uuid);
+		ResourcesResource.LOG.trace("= '{}'", ToStringBuilder.reflectionToString(resource));
+		ResourcesResource.LOG.debug("try to apply configuration to resource with uuid '{}'", uuid);
 
 		final String result = applyConfigurationForCSVPreview(resource, jsonObjectString);
 
 		if (result == null) {
 
-			ResourcesResource.LOG.debug("couldn't apply configuration to resource with uuid '" + uuid + "'");
+			ResourcesResource.LOG.debug("couldn't apply configuration to resource with uuid '{}'", uuid);
 			throw new DMPControllerException("couldn't apply configuration to resource with uuid '" + uuid + "'");
 		}
 
-		ResourcesResource.LOG.debug("applied configuration to resource with uuid '" + uuid + "'");
+		ResourcesResource.LOG.debug("applied configuration to resource with uuid '{}'", uuid);
 		return buildResponse(result);
 	}
 
@@ -742,8 +748,8 @@ public class ResourcesResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response csvJSONPreviewConfiguration(@ApiParam(value = "data resource identifier", required = true) @PathParam("uuid") final String uuid,
 			@ApiParam(value = "configuration (as JSON)", required = true) final String jsonObjectString) throws DMPControllerException {
-		ResourcesResource.LOG.debug("try to apply configuration for resource with uuid '" + uuid + "'");
-		ResourcesResource.LOG.debug("try to recieve resource with uuid '" + uuid + "' for csv json configuration preview");
+		ResourcesResource.LOG.debug("try to apply configuration for resource with uuid '{}'", uuid);
+		ResourcesResource.LOG.debug("try to recieve resource with uuid '{}' for csv json configuration preview", uuid);
 
 		final Optional<Resource> resourceOptional = dataModelUtil.fetchResource(uuid);
 
@@ -753,19 +759,19 @@ public class ResourcesResource {
 
 		final Resource resource = resourceOptional.get();
 
-		ResourcesResource.LOG.debug("found resource with uuid '" + uuid + "' for csv json configuration preview ");
-		ResourcesResource.LOG.trace("= '" + ToStringBuilder.reflectionToString(resource) + "'");
-		ResourcesResource.LOG.debug("try to apply configuration to resource with uuid '" + uuid + "'");
+		ResourcesResource.LOG.debug("found resource with uuid '{}' for csv json configuration preview ", uuid);
+		ResourcesResource.LOG.trace("= '{}'", ToStringBuilder.reflectionToString(resource));
+		ResourcesResource.LOG.debug("try to apply configuration to resource with uuid '{}'", uuid);
 
 		final String result = applyConfigurationForCSVJSONPreview(resource, jsonObjectString);
 
 		if (result == null) {
 
-			ResourcesResource.LOG.debug("couldn't apply configuration to resource with uuid '" + uuid + "'");
+			ResourcesResource.LOG.debug("couldn't apply configuration to resource with uuid '{}'", uuid);
 			throw new DMPControllerException("couldn't apply configuration to resource with uuid '" + uuid + "'");
 		}
 
-		ResourcesResource.LOG.debug("applied configuration to resource with uuid '" + uuid + "'");
+		ResourcesResource.LOG.debug("applied configuration to resource with uuid '{}'", uuid);
 		return buildResponse(result);
 	}
 
@@ -1029,7 +1035,7 @@ public class ResourcesResource {
 	 * @return the new persisted configuration
 	 * @throws DMPControllerException
 	 */
-	private ProxyConfiguration createNewConfiguration(final ConfigurationService configurationService) throws DMPControllerException {
+	private static ProxyConfiguration createNewConfiguration(final ConfigurationService configurationService) throws DMPControllerException {
 
 		final ProxyConfiguration proxyConfiguration;
 
@@ -1074,14 +1080,7 @@ public class ResourcesResource {
 			throw new DMPControllerException("couldn't determine file path");
 		}
 
-		final CSVSourceResourceCSVPreviewFlow flow;
-
-		try {
-			flow = CSVResourceFlowFactory.fromConfiguration(configurationFromJSON, CSVSourceResourceCSVPreviewFlow.class);
-		} catch (final DMPConverterException e) {
-
-			throw new DMPControllerException(e.getMessage());
-		}
+		final CSVSourceResourceCSVPreviewFlow flow = flowFactory2.get().csvPreview(configurationFromJSON);
 
 		try {
 			return flow.applyFile(filePathNode.asText());
@@ -1106,16 +1105,9 @@ public class ResourcesResource {
 			throw new DMPControllerException("couldn't determine file path");
 		}
 
-		final CSVSourceResourceCSVJSONPreviewFlow flow;
-
-		try {
-			flow = CSVResourceFlowFactory.fromConfiguration(configurationFromJSON, CSVSourceResourceCSVJSONPreviewFlow.class);
-		} catch (final DMPConverterException e) {
-
-			throw new DMPControllerException(e.getMessage());
-		}
-
-		flow.withLimit(50);
+		final CSVSourceResourceCSVJSONPreviewFlow flow = flowFactory2.get()
+				.jsonPreview(configurationFromJSON)
+				.withLimit(50);
 
 		try {
 			return flow.applyFile(filePathNode.asText());
