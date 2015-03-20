@@ -36,12 +36,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.dswarm.common.types.Tuple;
 import org.dswarm.controller.DMPControllerException;
 import org.dswarm.controller.DMPJsonException;
 import org.dswarm.persistence.DMPPersistenceException;
 import org.dswarm.persistence.model.DMPObject;
 import org.dswarm.persistence.model.proxy.ProxyDMPObject;
 import org.dswarm.persistence.model.proxy.RetrievalType;
+import org.dswarm.persistence.model.types.Triple;
 import org.dswarm.persistence.service.BasicJPAService;
 
 /**
@@ -234,7 +236,7 @@ public abstract class BasicResource<POJOCLASSPERSISTENCESERVICE extends BasicJPA
 	@Timed
 	public Response updateObject(final String jsonObjectString, /* @PathParam("uuid") */final String uuid) throws DMPControllerException {
 
-		BasicResource.LOG.debug("try to update " + pojoClassName + " '" + uuid + "'");
+		BasicResource.LOG.debug("try to update {} '{}'", pojoClassName, uuid);
 
 		final POJOCLASS objectFromDB = retrieveObject(uuid, jsonObjectString);
 
@@ -243,58 +245,9 @@ public abstract class BasicResource<POJOCLASSPERSISTENCESERVICE extends BasicJPA
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
-		final PROXYPOJOCLASS proxyObject = refreshObject(jsonObjectString, objectFromDB, uuid);
+		final Triple<PROXYPOJOCLASS, POJOCLASS, String> updateResult = updateObjectInternal(jsonObjectString, uuid, objectFromDB);
 
-		if (proxyObject == null) {
-
-			BasicResource.LOG.debug("couldn't update " + pojoClassName + " '" + uuid + "'");
-
-			throw new DMPControllerException("couldn't update " + pojoClassName + " '" + uuid + "'");
-		}
-
-		final POJOCLASS object = proxyObject.getObject();
-
-		if (object == null) {
-
-			BasicResource.LOG.debug("couldn't update " + pojoClassName + " '" + uuid + "'");
-
-			throw new DMPControllerException("couldn't update " + pojoClassName + " '" + uuid + "'");
-		}
-
-		BasicResource.LOG.debug("updated " + pojoClassName + " '" + uuid + "'");
-		BasicResource.LOG.trace(" = '" + ToStringBuilder.reflectionToString(object) + "'");
-
-		final String objectJSON = serializeObject(object);
-
-		BasicResource.LOG.debug("return updated " + pojoClassName + " with uuid '" + object.getUuid() + "'");
-		BasicResource.LOG.trace(" = '" + objectJSON + "'");
-
-		final URI objectURI = createObjectURI(object);
-		final ResponseBuilder responseBuilder;
-		final RetrievalType type = proxyObject.getType();
-
-		switch (type) {
-
-			case CREATED:
-
-				responseBuilder = Response.created(objectURI);
-
-				break;
-			case UPDATED:
-			case RETRIEVED:
-
-				responseBuilder = Response.ok().contentLocation(objectURI);
-
-				break;
-			default:
-
-				BasicResource.LOG.debug("something went wrong, while evaluating the retrieval type of the " + pojoClassName);
-
-				throw new DMPControllerException("something went wrong, while evaluating the retrieval type of the "
-						+ pojoClassName);
-		}
-
-		return responseBuilder.entity(objectJSON).build();
+		return createUpdateResponse(updateResult.v1(), updateResult.v2(), updateResult.v3());
 	}
 
 	/**
@@ -484,13 +437,17 @@ public abstract class BasicResource<POJOCLASSPERSISTENCESERVICE extends BasicJPA
 
 		if (object == null) {
 
-			BasicResource.LOG.debug(pojoClassName + " for uuid '" + uuid + "' does not exist, i.e., it cannot be updated");
+			BasicResource.LOG.debug("{} for uuid '{}' does not exist, i.e., it cannot be updated", pojoClassName, uuid);
 
 			return null;
 		}
 
-		BasicResource.LOG.debug("got " + pojoClassName + " with uuid '" + uuid + "' ");
-		BasicResource.LOG.trace("= '" + ToStringBuilder.reflectionToString(object) + "'");
+		BasicResource.LOG.debug("got {} with uuid '{}' ", pojoClassName, uuid);
+
+		if (BasicResource.LOG.isTraceEnabled()) {
+
+			BasicResource.LOG.trace("= '{}'", ToStringBuilder.reflectionToString(object));
+		}
 
 		return object;
 
@@ -575,5 +532,87 @@ public abstract class BasicResource<POJOCLASSPERSISTENCESERVICE extends BasicJPA
 			throws DMPPersistenceException {
 
 		return persistenceService.createObjectTransactional(objectFromJSON);
+	}
+
+	protected Triple<PROXYPOJOCLASS, POJOCLASS, String> updateObjectInternal(final String jsonObjectString, final String uuid,
+			final POJOCLASS objectFromDB)
+			throws DMPControllerException {
+
+		final Tuple<PROXYPOJOCLASS, POJOCLASS> updateResult = updateObjectInternal2(jsonObjectString, uuid, objectFromDB);
+
+		final POJOCLASS object = updateResult.v2();
+
+		final String objectJSON = serializeObject(object);
+
+		BasicResource.LOG.debug("return updated {} with uuid '{}'", pojoClassName, object.getUuid());
+
+		if (BasicResource.LOG.isTraceEnabled()) {
+
+			BasicResource.LOG.trace(" = '" + objectJSON + "'");
+		}
+
+		return Triple.triple(updateResult.v1(), object, objectJSON);
+	}
+
+	protected Tuple<PROXYPOJOCLASS, POJOCLASS> updateObjectInternal2(final String jsonObjectString, final String uuid,
+			final POJOCLASS objectFromDB) throws DMPControllerException {
+
+		final PROXYPOJOCLASS proxyObject = refreshObject(jsonObjectString, objectFromDB, uuid);
+
+		if (proxyObject == null) {
+
+			BasicResource.LOG.debug("couldn't update {} '{}'", pojoClassName, uuid);
+
+			throw new DMPControllerException("couldn't update " + pojoClassName + " '" + uuid + "'");
+		}
+
+		final POJOCLASS object = proxyObject.getObject();
+
+		if (object == null) {
+
+			BasicResource.LOG.debug("couldn't update {} '{}'", pojoClassName, uuid);
+
+			throw new DMPControllerException("couldn't update " + pojoClassName + " '" + uuid + "'");
+		}
+
+		BasicResource.LOG.debug("updated {} '{}'", pojoClassName, uuid);
+
+		if (BasicResource.LOG.isTraceEnabled()) {
+
+			BasicResource.LOG.trace(" = '" + ToStringBuilder.reflectionToString(object) + "'");
+		}
+
+		return Tuple.tuple(proxyObject, object);
+	}
+
+	protected Response createUpdateResponse(final PROXYPOJOCLASS proxyObject, final POJOCLASS object, final String objectJSON)
+			throws DMPControllerException {
+
+		final URI objectURI = createObjectURI(object);
+		final ResponseBuilder responseBuilder;
+		final RetrievalType type = proxyObject.getType();
+
+		switch (type) {
+
+			case CREATED:
+
+				responseBuilder = Response.created(objectURI);
+
+				break;
+			case UPDATED:
+			case RETRIEVED:
+
+				responseBuilder = Response.ok().contentLocation(objectURI);
+
+				break;
+			default:
+
+				BasicResource.LOG.debug("something went wrong, while evaluating the retrieval type of the {}", pojoClassName);
+
+				throw new DMPControllerException("something went wrong, while evaluating the retrieval type of the "
+						+ pojoClassName);
+		}
+
+		return responseBuilder.entity(objectJSON).build();
 	}
 }
