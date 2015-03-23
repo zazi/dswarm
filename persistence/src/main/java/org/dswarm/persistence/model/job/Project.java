@@ -53,7 +53,7 @@ public class Project extends ExtendedBasicDMPJPAObject {
 	/**
 	 *
 	 */
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The sample input data model that will be utilised for demonstration or testing of the mappings of the project.
@@ -64,7 +64,7 @@ public class Project extends ExtendedBasicDMPJPAObject {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	// @JsonSerialize(using = DMPJPAObjectReferenceSerializer.class)
 	// @XmlIDREF
-	private DataModel			inputDataModel;
+	private DataModel inputDataModel;
 
 	/**
 	 * The output data model that contains the output schema.
@@ -75,29 +75,41 @@ public class Project extends ExtendedBasicDMPJPAObject {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	// @JsonSerialize(using = DMPJPAObjectReferenceSerializer.class)
 	// @XmlIDREF
-	private DataModel			outputDataModel;
+	private DataModel outputDataModel;
 
 	/**
 	 * The collection of mappings the project.
 	 */
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
-	@JoinTable(name = "PROJECTS_MAPPINGS", joinColumns = { @JoinColumn(name = "PROJECT_UUID", referencedColumnName = "UUID") }, inverseJoinColumns = { @JoinColumn(name = "MAPPING_UUID", referencedColumnName = "UUID") })
+	@JoinTable(name = "PROJECTS_MAPPINGS", joinColumns = { @JoinColumn(name = "PROJECT_UUID", referencedColumnName = "UUID") }, inverseJoinColumns = {
+			@JoinColumn(name = "MAPPING_UUID", referencedColumnName = "UUID") })
 	// @JsonSerialize(using = SetMappingReferenceSerializer.class)
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	// @XmlIDREF
 	@XmlList
-	private Set<Mapping>		mappings;
+	private Set<Mapping> mappings;
+
+	/**
+	 * The skip filter of this project. A skip filter to skip all mappings for records that doesn't match the filter conditions.
+	 */
+	@XmlElement(name = "skip_filter")
+	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	@JoinColumn(name = "SKIP_FILTER")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private Filter skipFilter;
 
 	/**
 	 * The collection of functions that are created in this project, i.e., those functions are only visible to this project.
 	 */
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
-	@JoinTable(name = "PROJECTS_FUNCTIONS", joinColumns = { @JoinColumn(name = "PROJECT_UUID", referencedColumnName = "UUID") }, inverseJoinColumns = { @JoinColumn(name = "FUNCTION_UUID", referencedColumnName = "UUID") })
+	@JoinTable(name = "PROJECTS_FUNCTIONS", joinColumns = {
+			@JoinColumn(name = "PROJECT_UUID", referencedColumnName = "UUID") }, inverseJoinColumns = {
+			@JoinColumn(name = "FUNCTION_UUID", referencedColumnName = "UUID") })
 	// @JsonSerialize(using = SetFunctionReferenceSerializer.class)
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	// @XmlIDREF
 	@XmlList
-	private Set<Function>		functions;
+	private Set<Function> functions;
 
 	public Project(final String uuidArg) {
 
@@ -186,6 +198,26 @@ public class Project extends ExtendedBasicDMPJPAObject {
 	}
 
 	/**
+	 * Gets the skip filter of the project.
+	 *
+	 * @return the skip filter of the project
+	 */
+	public Filter getSkipFilter() {
+
+		return skipFilter;
+	}
+
+	/**
+	 * Sets the skip filter of the project.
+	 *
+	 * @param skipFilterArg a new skip filter
+	 */
+	public void setSkipFilter(final Filter skipFilterArg) {
+
+		skipFilter = skipFilterArg;
+	}
+
+	/**
 	 * Gets the functions of the project.
 	 *
 	 * @return the functions of the project
@@ -229,6 +261,7 @@ public class Project extends ExtendedBasicDMPJPAObject {
 				&& DMPPersistenceUtil.getDataModelUtils().completeEquals(((Project) obj).getInputDataModel(), getInputDataModel())
 				&& DMPPersistenceUtil.getDataModelUtils().completeEquals(((Project) obj).getOutputDataModel(), getOutputDataModel())
 				&& DMPPersistenceUtil.getMappingUtils().completeEquals(((Project) obj).getMappings(), getMappings())
+				&& DMPPersistenceUtil.getFilterUtils().completeEquals(((Project) obj).getSkipFilter(), getSkipFilter())
 				&& DMPPersistenceUtil.getFunctionUtils().completeEquals(((Project) obj).getFunctions(), getFunctions());
 	}
 }
