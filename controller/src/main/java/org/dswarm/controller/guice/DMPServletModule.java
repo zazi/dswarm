@@ -34,7 +34,7 @@ public class DMPServletModule extends ServletModule {
 	 */
 	@Override
 	protected void configureServlets() {
-		serve("/api-docs").with(SwaggerConfiguration.class);
+		serve("/").with(SwaggerConfiguration.class);
 		filter("/*").through(PersistFilter.class);
 		filter("/*").through(ExecutionScopeFilter.class);
 	}

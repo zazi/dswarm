@@ -15,15 +15,15 @@
  */
 package org.dswarm.controller.doc;
 
-import javax.servlet.ServletConfig;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import com.wordnik.swagger.config.ConfigFactory$;
-import com.wordnik.swagger.config.SwaggerConfig;
-import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
-import com.wordnik.swagger.model.ApiInfo;
+import io.swagger.jaxrs.config.SwaggerContextService;
+import io.swagger.jersey.config.JerseyJaxrsConfig;
+import io.swagger.models.*;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 
 /**
  * The configuration for the documentation generation application Swagger. It is utilised for generating the documentation of the
@@ -67,28 +67,23 @@ public class SwaggerConfiguration extends JerseyJaxrsConfig {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void init(final ServletConfig servletConfig) {
+	public void init(final ServletConfig servletConfig) throws ServletException {
 
-		super.init(servletConfig);
+		final Info info = new Info()
+				.version(apiVersion)
+				.title("d:swarm Backend")
+				.description("This is the d:swarm Backend server.")
+				.termsOfService("http://helloreverb.com/terms/")
+				.contact(new Contact()
+						.email("thomas.gaengler@slub-dresden.de"))
+				.license(new License()
+						.name("Apache 2.0")
+						.url("http://www.apache.org/licenses/LICENSE-2.0.html"));
 
-		final ApiInfo info = new ApiInfo(
-			      /* title */ "d:swarm Backend",
-			/* description */ "This is the d:swarm Backend server.",
-			    /* TOS Url */ "http://helloreverb.com/terms/",
-			    /* Contact */ "tgaengler@avantgarde-labs.de",
-			    /* license */ "Apache 2.0",
-			/* license URL */ "http://www.apache.org/licenses/LICENSE-2.0.html"
-		);
+		final Swagger swagger = new Swagger().info(info).basePath(apiBaseUrl);
+		swagger.externalDocs(new ExternalDocs("Find out more about Swagger", "http://swagger.io"));
 
-		final SwaggerConfig config = ConfigFactory$.MODULE$.config();
-
-		config.setApiVersion(apiVersion);
-		config.setBasePath(apiBaseUrl);
-		config.setApiInfo(info);
-
-		// Not to be confused with the swagger framework version
-		// This is the swagger specification version
-		config.setSwaggerVersion("1.2");
+		new SwaggerContextService().withServletConfig(servletConfig).updateSwagger(swagger);
 	}
 
 }

@@ -253,14 +253,18 @@
 
 		<!-- swagger for API docu -->
 		<dependency>
-			<groupId>com.wordnik</groupId>
-			<artifactId>swagger-core_2.10</artifactId>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-core</artifactId>
 			<version>${version.swagger}</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
 					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
 				</exclusion>
 				<exclusion>
 					<artifactId>jackson-jaxrs-json-provider</artifactId>
@@ -269,10 +273,6 @@
 				<exclusion>
 					<artifactId>jackson-databind</artifactId>
 					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>paranamer</artifactId>
-					<groupId>com.thoughtworks.paranamer</groupId>
 				</exclusion>
 				<exclusion>
 					<artifactId>jackson-annotations</artifactId>
@@ -287,24 +287,28 @@
 					<groupId>com.google.guava</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
+					<groupId>com.fasterxml.jackson.datatype</groupId>
+					<artifactId>jackson-datatype-joda</artifactId>
 				</exclusion>
 				<exclusion>
-					<artifactId>commons-lang</artifactId>
-					<groupId>commons-lang</groupId>
+					<groupId>com.fasterxml.jackson.dataformat</groupId>
+					<artifactId>jackson-dataformat-yaml</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>com.wordnik</groupId>
-			<artifactId>swagger-jersey2-jaxrs_2.10</artifactId>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-jersey2-jaxrs</artifactId>
 			<scope>compile</scope>
 			<version>${version.swagger}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>jsr311-api</artifactId>
+					<groupId> com.fasterxml.jackson.dataformat</groupId>
+					<artifactId>jackson-dataformat-xml</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.dataformat</groupId>
+					<artifactId>jackson-dataformat-yaml</artifactId>
 				</exclusion>
 				<exclusion>
 					<artifactId>guava</artifactId>
@@ -319,10 +323,50 @@
 					<groupId>org.glassfish.jersey.containers</groupId>
 				</exclusion>
 				<exclusion>
+					<artifactId>jackson-jaxrs-json-provider</artifactId>
+					<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-annotations</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-module-jaxb-annotations</artifactId>
+					<groupId>com.fasterxml.jackson.module</groupId>
+				</exclusion>
+				<exclusion>
 					<artifactId>javassist</artifactId>
 					<groupId>org.javassist</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>stax2-api</artifactId>
+					<groupId>org.codehaus.woodstox</groupId>
+				</exclusion>
 			</exclusions>
+		</dependency>
+		<!-- for swagger -->
+		<dependency>
+			<groupId> com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+			<version>${version.jackson}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+			<version>${version.jackson}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+			<version>${version.jackson}</version>
 		</dependency>
 
 		<!-- DI Guice Dependencies -->

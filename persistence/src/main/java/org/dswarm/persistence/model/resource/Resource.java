@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
-import com.wordnik.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModel;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
 import org.slf4j.Logger;

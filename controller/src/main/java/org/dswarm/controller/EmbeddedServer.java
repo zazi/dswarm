@@ -199,18 +199,14 @@ public class EmbeddedServer {
 			}
 		});
 
-		final Thread keepAliveThread = new Thread(new Runnable() {
+		final Thread keepAliveThread = new Thread(() -> {
 
-			@Override
-			public void run() {
+			try {
 
-				try {
+				keepAliveLatch.await();
+			} catch (final InterruptedException ignore) {
 
-					keepAliveLatch.await();
-				} catch (final InterruptedException ignore) {
-
-					EmbeddedServer.LOG.error(EmbeddedServer.FATAL, "The backend web server execution thread was interrupted.");
-				}
+				EmbeddedServer.LOG.error(EmbeddedServer.FATAL, "The backend web server execution thread was interrupted.");
 			}
 		}, "dmp/grizzly");
 

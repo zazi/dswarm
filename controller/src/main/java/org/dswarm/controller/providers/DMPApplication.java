@@ -17,9 +17,8 @@ package org.dswarm.controller.providers;
 
 import javax.inject.Inject;
 
-import com.wordnik.swagger.jersey.listing.ApiListingResourceJSON;
-import com.wordnik.swagger.jersey.listing.JerseyApiDeclarationProvider;
-import com.wordnik.swagger.jersey.listing.JerseyResourceListingProvider;
+import io.swagger.jaxrs.listing.ApiListingResource;
+import io.swagger.jaxrs.listing.SwaggerSerializers;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -67,8 +66,8 @@ class DMPApplication extends ResourceConfig {
 	}
 
 	private void registerSwaggerResources() {
-		packages("com.wordnik.swagger.jersey.listing");
-		registerClasses(ApiListingResourceJSON.class, JerseyApiDeclarationProvider.class, JerseyResourceListingProvider.class);
+		packages("io.swagger.jaxrs.listing");
+		registerClasses(ApiListingResource.class, SwaggerSerializers.class);
 	}
 
 	private static void buildGuiceBridge(final ServiceLocator serviceLocator) {
