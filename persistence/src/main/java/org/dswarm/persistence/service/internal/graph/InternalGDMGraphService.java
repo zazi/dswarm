@@ -65,6 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
@@ -119,6 +120,13 @@ public class InternalGDMGraphService implements InternalModelService {
 	private static final String          DSWARM_MODEL_STREAMER_THREAD_NAMING_PATTERN = "dswarm-model-streamer-%d";
 	private static final ExecutorService EXECUTOR_SERVICE                            = Executors.newCachedThreadPool(
 			new BasicThreadFactory.Builder().daemon(false).namingPattern(DSWARM_MODEL_STREAMER_THREAD_NAMING_PATTERN).build());
+
+	private static final String DSWARM_GDM_THREAD_NAMING_PATTERN = "dswarm-gdm-%d";
+
+	private static final ExecutorService GDM_EXECUTOR_SERVICE = Executors
+			.newCachedThreadPool(
+					new BasicThreadFactory.Builder().daemon(false).namingPattern(DSWARM_GDM_THREAD_NAMING_PATTERN).build());
+	private static final Scheduler GDM_SCHEDULER = Schedulers.from(GDM_EXECUTOR_SERVICE);
 
 	private static final ClientBuilder BUILDER                   = ClientBuilder.newBuilder().register(MultiPartFeature.class)
 			.property(ClientProperties.CHUNKED_ENCODING_SIZE, CHUNK_SIZE)
@@ -184,7 +192,7 @@ public class InternalGDMGraphService implements InternalModelService {
 
 		// always full at creation time, i.e., all existing records will be deprecated (however, there shouldn't be any)
 		// versioning is disabled at data model creation, since there should be any data for this data model in the data hub
-		final Observable<Response> result = createOrUpdateObject(dataModelUuid, model, UpdateFormat.FULL, false);
+		final Observable<Response> result = createOrUpdateObject(dataModelUuid, model.observeOn(GDM_SCHEDULER), UpdateFormat.FULL, false);
 		result.doOnCompleted(() -> LOG.debug("created data model '{}' in data hub", dataModelUuid));
 
 		return result;

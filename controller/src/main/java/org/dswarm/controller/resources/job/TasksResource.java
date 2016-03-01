@@ -379,7 +379,7 @@ public class TasksResource {
 
 			final TransformationFlow flow = transformationFlowFactory.fromTask(task);
 			result = flow.apply(inputData, writeResultToDatahub, doNotReturnJsonToCaller2, doVersioningOnResult, TRANSFORMATION_ENGINE_SCHEDULER)
-					.subscribeOn(TRANSFORMATION_ENGINE_SCHEDULER);
+					.observeOn(TRANSFORMATION_ENGINE_SCHEDULER);
 		}
 
 		if (result == null) {
@@ -457,9 +457,9 @@ public class TasksResource {
 
 						LOG.debug("trigger XML export");
 
-						final Observable<JsonNode> resultObservable = xmlExporter.generate(result.subscribeOn(EXPORT_SCHEDULER), bos);
+						final Observable<JsonNode> resultObservable = xmlExporter.generate(result.observeOn(EXPORT_SCHEDULER), bos);
 
-						resultObservable.subscribeOn(EXPORT_SCHEDULER)
+						resultObservable.observeOn(EXPORT_SCHEDULER)
 								.doOnSubscribe(() -> LOG.debug("subscribed to XML export in task resource"))
 								.subscribe(new Observer<JsonNode>() {
 
@@ -578,7 +578,7 @@ public class TasksResource {
 
 			if (doNotReturnJsonToCaller) {
 
-				result.subscribeOn(EXPORT_SCHEDULER).subscribe(new Observer<JsonNode>() {
+				result.observeOn(EXPORT_SCHEDULER).subscribe(new Observer<JsonNode>() {
 
 					@Override public void onCompleted() {
 
@@ -609,7 +609,7 @@ public class TasksResource {
 			final ArrayNode feFriendlyJSON = objectMapper.createArrayNode();
 			final AtomicInteger counter = new AtomicInteger(0);
 
-			result.subscribeOn(EXPORT_SCHEDULER).doOnSubscribe(() -> TasksResource.LOG.debug("subscribed to JSON export on task resource")).subscribe(new Observer<JsonNode>() {
+			result.observeOn(EXPORT_SCHEDULER).doOnSubscribe(() -> TasksResource.LOG.debug("subscribed to JSON export on task resource")).subscribe(new Observer<JsonNode>() {
 
 				@Override public void onCompleted() {
 

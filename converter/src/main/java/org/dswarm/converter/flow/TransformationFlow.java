@@ -267,7 +267,7 @@ public class TransformationFlow {
 
 		final Observable<org.dswarm.persistence.model.internal.Model> model = writer.getObservable()
 				.doOnSubscribe(() -> TransformationFlow.LOG.debug("subscribed on transformation result observable"))
-				.subscribeOn(TRANSFORMATION_SCHEDULER)
+				.observeOn(TRANSFORMATION_SCHEDULER)
 				.onBackpressureBuffer(10000)
 				.filter(gdmModel -> {
 
