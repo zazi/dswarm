@@ -578,7 +578,7 @@ public class TasksResource {
 
 			if (doNotReturnJsonToCaller) {
 
-				result.subscribe(new Observer<JsonNode>() {
+				result.subscribeOn(EXPORT_SCHEDULER).subscribe(new Observer<JsonNode>() {
 
 					@Override public void onCompleted() {
 
@@ -609,7 +609,7 @@ public class TasksResource {
 			final ArrayNode feFriendlyJSON = objectMapper.createArrayNode();
 			final AtomicInteger counter = new AtomicInteger(0);
 
-			result.doOnSubscribe(() -> TasksResource.LOG.debug("subscribed to JSON export on task resource")).subscribe(new Observer<JsonNode>() {
+			result.subscribeOn(EXPORT_SCHEDULER).doOnSubscribe(() -> TasksResource.LOG.debug("subscribed to JSON export on task resource")).subscribe(new Observer<JsonNode>() {
 
 				@Override public void onCompleted() {
 

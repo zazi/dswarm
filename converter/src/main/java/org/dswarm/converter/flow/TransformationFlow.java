@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2013 – 2016 SLUB Dresden & Avantgarde Labs GmbH (<code@dswarm.org>)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -50,6 +52,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.name.Named;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.culturegraph.mf.exceptions.MorphDefException;
 import org.culturegraph.mf.framework.ObjectPipe;
 import org.culturegraph.mf.framework.StreamPipe;
@@ -121,6 +124,13 @@ public class TransformationFlow {
 	private final TimerBasedFactory timerBasedFactory;
 
 	private final Timer morphTimer;
+
+	private static final String DSWARM_TRANSFORMATION_THREAD_NAMING_PATTERN = "dswarm-transformation-%d";
+
+	private static final ExecutorService TRANSFORMATION_EXECUTOR_SERVICE = Executors
+			.newCachedThreadPool(
+					new BasicThreadFactory.Builder().daemon(false).namingPattern(DSWARM_TRANSFORMATION_THREAD_NAMING_PATTERN).build());
+	private static final Scheduler TRANSFORMATION_SCHEDULER = Schedulers.from(TRANSFORMATION_EXECUTOR_SERVICE);
 
 	@Inject
 	private TransformationFlow(
@@ -255,76 +265,80 @@ public class TransformationFlow {
 		final AtomicInteger counter2 = new AtomicInteger(0);
 		final AtomicLong statementCounter = new AtomicLong(0);
 
-		final Observable<org.dswarm.persistence.model.internal.Model> model = writer.getObservable().filter(gdmModel -> {
+		final Observable<org.dswarm.persistence.model.internal.Model> model = writer.getObservable()
+				.doOnSubscribe(() -> TransformationFlow.LOG.debug("subscribed on transformation result observable"))
+				.subscribeOn(TRANSFORMATION_SCHEDULER)
+				.onBackpressureBuffer(10000)
+				.filter(gdmModel -> {
 
-			if (counter.incrementAndGet() == 1) {
+					if (counter.incrementAndGet() == 1) {
 
-				LOG.debug("start processing first record in transformation engine");
-			}
+						LOG.debug("start processing first record in transformation engine");
+					}
 
-			//final int current = counter.incrementAndGet();
+					//final int current = counter.incrementAndGet();
 
-			//LOG.debug("processed resource model number '{}'", current);
+					//LOG.debug("processed resource model number '{}'", current);
 
-			final Model model1 = gdmModel.getModel();
+					final Model model1 = gdmModel.getModel();
 
-			if (model1 == null) {
+					if (model1 == null) {
 
-				LOG.debug("no model available");
+						LOG.debug("no model available");
 
-				return false;
-			}
+						return false;
+					}
 
-			final Collection<Resource> resources = model1.getResources();
+					final Collection<Resource> resources = model1.getResources();
 
-			if (resources == null || resources.isEmpty()) {
+					if (resources == null || resources.isEmpty()) {
 
-				LOG.debug("no resources in model available");
+						LOG.debug("no resources in model available");
 
-				return false;
-			}
+						return false;
+					}
 
-			//LOG.debug("processed resource model number '{}' with '{}' and resource size '{}'", current, resources.iterator().next().getUri(), resources.size());
+					//LOG.debug("processed resource model number '{}' with '{}' and resource size '{}'", current, resources.iterator().next().getUri(), resources.size());
 
-			final Set<String> recordURIsFromGDMModel = gdmModel.getRecordURIs();
+					final Set<String> recordURIsFromGDMModel = gdmModel.getRecordURIs();
 
-			return !(recordURIsFromGDMModel == null || recordURIsFromGDMModel.isEmpty());
-		}).map(gdmModel -> {
+					return !(recordURIsFromGDMModel == null || recordURIsFromGDMModel.isEmpty());
+				}).map(gdmModel -> {
 
-			final GDMModel finalGDMModel;
+					final GDMModel finalGDMModel;
 
-			// TODO: this a WORKAROUND to insert a default type (data model schema record class URI or bibo:Document) for records in the output data model
-			if (gdmModel.getRecordClassURI() == null) {
+					// TODO: this a WORKAROUND to insert a default type (data model schema record class URI or bibo:Document) for records in the output data model
+					if (gdmModel.getRecordClassURI() == null) {
 
-				final String recordURI = gdmModel.getRecordURIs().iterator().next();
+						final String recordURI = gdmModel.getRecordURIs().iterator().next();
 
-				final Resource recordResource = gdmModel.getModel().getResource(recordURI);
+						final Resource recordResource = gdmModel.getModel().getResource(recordURI);
 
-				if (recordResource != null) {
+						if (recordResource != null) {
 
-					// TODO check this: subject OK?
-					recordResource.addStatement(getOrCreateResourceNode(recordResource.getUri()), RDF_TYPE_PREDICATE,
-							getOrCreateResourceNode(defaultRecordClassURI));
-				}
+							// TODO check this: subject OK?
+							recordResource.addStatement(getOrCreateResourceNode(recordResource.getUri()), RDF_TYPE_PREDICATE,
+									getOrCreateResourceNode(defaultRecordClassURI));
+						}
 
-				// re-write GDM model
-				finalGDMModel = new GDMModel(gdmModel.getModel(), recordURI, defaultRecordClassURI);
-			} else {
+						// re-write GDM model
+						finalGDMModel = new GDMModel(gdmModel.getModel(), recordURI, defaultRecordClassURI);
+					} else {
 
-				finalGDMModel = gdmModel;
-			}
+						finalGDMModel = gdmModel;
+					}
 
-			statementCounter.addAndGet(gdmModel.getModel().size());
+					statementCounter.addAndGet(gdmModel.getModel().size());
 
-			if (counter2.incrementAndGet() == 1) {
+					if (counter2.incrementAndGet() == 1) {
 
-				LOG.info("processed first record with '{}' statements in transformation engine", statementCounter.get());
-			}
+						LOG.info("processed first record with '{}' statements in transformation engine", statementCounter.get());
+					}
 
-			return finalGDMModel;
-		}).cast(org.dswarm.persistence.model.internal.Model.class).doOnCompleted(
-				() -> LOG.info("processed '{}' records (from '{}') with '{}' statements in transformation engine", counter2.get(), counter.get(),
-						statementCounter.get()));
+					return finalGDMModel;
+				}).cast(org.dswarm.persistence.model.internal.Model.class).doOnCompleted(
+						() -> LOG.info("processed '{}' records (from '{}') with '{}' statements in transformation engine", counter2.get(), counter.get(),
+								statementCounter.get()));
 
 		final Observable<JsonNode> resultObservable;
 
