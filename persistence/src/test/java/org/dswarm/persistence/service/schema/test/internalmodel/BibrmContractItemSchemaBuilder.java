@@ -38,6 +38,7 @@ public class BibrmContractItemSchemaBuilder extends SchemaBuilder {
 		// basic properties for ERM example
 		// tempSchema.addAttributePath(builder.parsePrefixPath("bibrm:hasItem")); // this needs to go to the schema of Contract
 		// itself
+		tempSchema.addAttributePath(builder.parseAsAttributePathInstance("rdf:about"));
 		tempSchema.addAttributePath(builder.parseAsAttributePathInstance("rdf:type"));
 		tempSchema.addAttributePath(builder.parseAsAttributePathInstance("bibrm:EISSN"));
 		tempSchema.addAttributePath(builder.parseAsAttributePathInstance("dc:title"));

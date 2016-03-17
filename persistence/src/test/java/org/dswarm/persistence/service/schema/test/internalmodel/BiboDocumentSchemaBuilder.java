@@ -37,6 +37,9 @@ public class BiboDocumentSchemaBuilder extends SchemaBuilder {
 		 * biboDocumentSchema.addAttributePath(builder.start().add(DC + "creator").add(FOAF + "first_name").getPath());
 		 */
 
+		// for record identifier generating
+		tempSchema.addAttributePath(builder.parseAsAttributePathInstance("rdf:about"));
+
 		// basic properties used in DINI-AG Titeldaten recommendations
 		tempSchema.addAttributePath(builder.parseAsAttributePathInstance("dc:title"));
 		tempSchema.addAttributePath(builder.parseAsAttributePathInstance("rda:otherTitleInformation"));
@@ -47,6 +50,8 @@ public class BiboDocumentSchemaBuilder extends SchemaBuilder {
 		{
 			// add "deep" paths as schema attribute path instances with attached sub-schemata ...
 			final Schema foafPersonSchema = new FoafPersonSchemaBuilder().buildSchema();
+			// for record identifier generating
+			tempSchema.addAttributePath(builder.parseAsAttributePathInstance("rdf:about", foafPersonSchema));
 			tempSchema.addAttributePath(builder.parseAsAttributePathInstance("dcterms:creator", foafPersonSchema));
 			tempSchema.addAttributePath(builder.parseAsAttributePathInstance("dcterms:contributor", foafPersonSchema));
 		}

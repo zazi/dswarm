@@ -15,18 +15,8 @@
  */
 package org.dswarm.converter.schema.test;
 
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import com.google.inject.Provider;
-import org.junit.Assert;
-import org.junit.Test;
-
 import org.dswarm.common.types.Tuple;
 import org.dswarm.converter.GuicedTest;
 import org.dswarm.converter.schema.XMLSchemaParser;
@@ -36,7 +26,6 @@ import org.dswarm.persistence.model.internal.helper.AttributePathHelperHelper;
 import org.dswarm.persistence.model.schema.AttributePath;
 import org.dswarm.persistence.model.schema.ContentSchema;
 import org.dswarm.persistence.model.schema.Schema;
-import org.dswarm.persistence.model.schema.SchemaAttributePathInstance;
 import org.dswarm.persistence.model.schema.utils.SchemaUtils;
 import org.dswarm.persistence.service.UUIDService;
 import org.dswarm.persistence.service.schema.AttributePathService;
@@ -44,6 +33,15 @@ import org.dswarm.persistence.service.schema.AttributeService;
 import org.dswarm.persistence.service.schema.SchemaAttributePathInstanceService;
 import org.dswarm.persistence.service.schema.SchemaService;
 import org.dswarm.persistence.util.DMPPersistenceUtil;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author tgaengler
@@ -516,12 +514,7 @@ public class XMLSchemaParserTest extends GuicedTest {
 
 	private static Set<AttributePathHelper> convertToSet(final Map<String, AttributePathHelper> attributePathsMap) {
 
-		final Set<AttributePathHelper> attributePaths = new LinkedHashSet<>();
-
-		for (final AttributePathHelper attributePath : attributePathsMap.values()) {
-
-			attributePaths.add(attributePath);
-		}
+		final Set<AttributePathHelper> attributePaths = attributePathsMap.values().stream().collect(Collectors.toCollection(LinkedHashSet::new));
 
 		return attributePaths;
 	}
