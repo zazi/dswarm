@@ -15,7 +15,6 @@
 			<field column="spelling" xpath="/Document/spelling"/>
 			<field column="spellingShingle" xpath="/Document/spellingShingle"/>
 			<field column="mega_collection" xpath="/Document/mega_collection"/>
-			<field column="mega_toplevel" xpath="/Document/mega_toplevel"/>
 			<field column="record_id" xpath="/Document/record_id"/>
 			<field column="source_id" xpath="/Document/source_id"/>
 			<field column="authorized_mode" xpath="/Document/authorized_mode"/>
@@ -35,40 +34,6 @@
 			<field column="purchase" xpath="/Document/purchase"/>
 			<field column="timecode" xpath="/Document/timecode"/>
 			<field column="misc_dech1" xpath="/Document/misc_dech1"/>
-			<field column="misc_del152" xpath="/Document/misc_del152"/>
-			<field column="misc_de105" xpath="/Document/misc_de105"/>
-			<field column="branch_de15" xpath="/Document/branch_de15"/>
-			<field column="branch_dech1" xpath="/Document/branch_dech1"/>
-			<field column="branch_de105" xpath="/Document/branch_de105"/>
-			<field column="branch_de520" xpath="/Document/branch_de520"/>
-			<field column="branch_dezwi2" xpath="/Document/branch_dezwi2"/>
-			<field column="branch_dezi4" xpath="/Document/branch_dezi4"/>
-			<field column="collcode_de15" xpath="/Document/collcode_de15"/>
-			<field column="collcode_dech1" xpath="/Document/collcode_dech1"/>
-			<field column="collcode_de105" xpath="/Document/collcode_de105"/>
-			<field column="collcode_de520" xpath="/Document/collcode_de520"/>
-			<field column="collcode_dezwi2" xpath="/Document/collcode_dezwi2"/>
-			<field column="collcode_dezi4" xpath="/Document/collcode_dezi4"/>
-			<field column="format_de14" xpath="/Document/format_de14"/>
-			<field column="format_de15" xpath="/Document/format_de15"/>
-			<field column="format_del152" xpath="/Document/format_del152"/>
-			<field column="format_dech1" xpath="/Document/format_dech1"/>
-			<field column="format_de105" xpath="/Document/format_de105"/>
-			<field column="format_de520" xpath="/Document/format_de520"/>
-			<field column="format_del189" xpath="/Document/format_del189"/>
-			<field column="format_dezwi2" xpath="/Document/format_dezwi2"/>
-			<field column="format_dezi4" xpath="/Document/format_dezi4"/>
-			<field column="format_de540" xpath="/Document/format_de540"/>
-			<field column="format_ded117" xpath="/Document/format_ded117"/>
-			<field column="format_degla1" xpath="/Document/format_degla1"/>
-			<field column="local_heading_facet_del152" xpath="/Document/local_heading_facet_del152"/>
-			<field column="local_heading_dezwi2" xpath="/Document/local_heading_dezwi2"/>
-			<field column="local_heading_facet_dezwi2" xpath="/Document/local_heading_facet_dezwi2"/>
-			<field column="local_heading_del242" xpath="/Document/local_heading_del242"/>
-			<field column="local_class_del242" xpath="/Document/local_class_del242"/>
-			<field column="udk_raw_de105" xpath="/Document/udk_raw_de105"/>
-			<field column="udk_facet_de105" xpath="/Document/udk_facet_de105"/>
-			<field column="udk_raw_del189" xpath="/Document/udk_raw_del189"/>
 			<field column="finc_class_facet" xpath="/Document/finc_class_facet"/>
 			<field column="zdb" xpath="/Document/zdb"/>
 			<field column="format" xpath="/Document/format"/>
@@ -119,9 +84,7 @@
 			<field column="urn" xpath="/Document/urn"/>
 			<field column="isbn" xpath="/Document/isbn"/>
 			<field column="issn" xpath="/Document/issn"/>
-			<field column="isbn_canc" xpath="/Document/isbn_canc"/>
 			<field column="ismn" xpath="/Document/ismn"/>
-			<field column="issn_canc" xpath="/Document/issn_canc"/>
 			<field column="oclc_num" xpath="/Document/oclc_num"/>
 			<field column="topic" xpath="/Document/topic"/>
 			<field column="topic_unstemmed" xpath="/Document/topic_unstemmed"/>
@@ -149,6 +112,7 @@
 			<field column="hierarchy_sequence" xpath="/Document/hierarchy_sequence"/>
 			<field column="is_hierarchy_id" xpath="/Document/is_hierarchy_id"/>
 			<field column="is_hierarchy_title" xpath="/Document/is_hierarchy_title"/>
+			<field column="title_in_hierarchy" xpath="/Document/title_in_hierarchy"/>
 			<field column="container_title" xpath="/Document/container_title"/>
 			<field column="container_volume" xpath="/Document/container_volume"/>
 			<field column="container_issue" xpath="/Document/container_issue"/>
