@@ -24,13 +24,13 @@ import org.culturegraph.mf.framework.ObjectPipe;
 import org.culturegraph.mf.framework.ObjectReceiver;
 import org.culturegraph.mf.types.Triple;
 import rx.Observable;
-import rx.Subscriber;
 
 import org.dswarm.converter.DMPConverterException;
 import org.dswarm.converter.mf.stream.converter.StreamToRecordTriples;
 import org.dswarm.converter.mf.stream.reader.CsvReader;
 import org.dswarm.persistence.model.resource.Configuration;
 import org.dswarm.persistence.model.resource.DataModel;
+import rx.observables.SyncOnSubscribe;
 
 /**
  * @author phorn
@@ -65,12 +65,12 @@ public class CSVSourceResourceTriplesFlow extends AbstractCSVResourceFlow<Observ
 		pipe.setReceiver(new StreamToRecordTriples())
 				.setReceiver(tripleReceiver);
 
-		return Observable.create(subscriber -> {
+		return Observable.create(SyncOnSubscribe.createStateless(subscriber -> {
 
 			tripleReceiver.getObservable().subscribe(subscriber);
 
 			opener.process(obj);
 			opener.closeStream();
-		});
+		}));
 	}
 }
