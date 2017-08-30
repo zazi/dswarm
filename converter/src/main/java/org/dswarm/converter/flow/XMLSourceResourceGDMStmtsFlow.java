@@ -15,9 +15,6 @@
  */
 package org.dswarm.converter.flow;
 
-import java.io.Reader;
-import java.util.Optional;
-
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,11 +25,6 @@ import org.culturegraph.mf.framework.DefaultObjectPipe;
 import org.culturegraph.mf.framework.ObjectReceiver;
 import org.culturegraph.mf.stream.converter.xml.XmlDecoder;
 import org.culturegraph.mf.stream.source.StringReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import rx.Observable;
-import rx.Subscriber;
-
 import org.dswarm.converter.DMPConverterException;
 import org.dswarm.converter.mf.stream.GDMModelReceiver;
 import org.dswarm.converter.mf.stream.source.BOMResourceOpener;
@@ -44,6 +36,13 @@ import org.dswarm.persistence.model.internal.gdm.GDMModel;
 import org.dswarm.persistence.model.resource.Configuration;
 import org.dswarm.persistence.model.resource.DataModel;
 import org.dswarm.persistence.model.resource.utils.ConfigurationStatics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import rx.Observable;
+import rx.observables.SyncOnSubscribe;
+
+import java.io.Reader;
+import java.util.Optional;
 
 /**
  * Flow that transforms a given XML source into GDM statements.
@@ -145,7 +144,7 @@ public class XMLSourceResourceGDMStmtsFlow {
 				.setReceiver(gdmModelsTimer)
 				.setReceiver(writer);
 
-		return Observable.create(subscriber -> {
+		return Observable.create(SyncOnSubscribe.createStateless(subscriber -> {
 
 			try {
 
@@ -159,7 +158,7 @@ public class XMLSourceResourceGDMStmtsFlow {
 
 				writer.propagateError(e);
 			}
-		});
+		}));
 	}
 
 	private static Optional<String> getStringParameter(final Configuration configuration, final String key) throws DMPConverterException {

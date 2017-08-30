@@ -15,9 +15,6 @@
  */
 package org.dswarm.converter.flow;
 
-import java.io.Reader;
-import java.util.Optional;
-
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,11 +24,6 @@ import com.google.inject.name.Named;
 import org.culturegraph.mf.framework.DefaultObjectPipe;
 import org.culturegraph.mf.framework.ObjectReceiver;
 import org.culturegraph.mf.stream.source.StringReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import rx.Observable;
-import rx.Subscriber;
-
 import org.dswarm.converter.DMPConverterException;
 import org.dswarm.converter.mf.stream.GDMModelReceiver;
 import org.dswarm.converter.mf.stream.converter.JsonDecoder;
@@ -43,6 +35,13 @@ import org.dswarm.persistence.model.internal.gdm.GDMModel;
 import org.dswarm.persistence.model.resource.Configuration;
 import org.dswarm.persistence.model.resource.DataModel;
 import org.dswarm.persistence.model.resource.utils.ConfigurationStatics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import rx.Observable;
+import rx.observables.SyncOnSubscribe;
+
+import java.io.Reader;
+import java.util.Optional;
 
 /**
  * Flow that transforms a given JSON source into GDM statements.
@@ -136,24 +135,21 @@ public class JSONSourceResourceGDMStmtsFlow {
 				.setReceiver(gdmModelsTimer)
 				.setReceiver(writer);
 
-		return Observable.create(new Observable.OnSubscribe<GDMModel>() {
+		return Observable.create(SyncOnSubscribe.createStateless(subscriber -> {
 
-			@Override public void call(final Subscriber<? super GDMModel> subscriber) {
+			try {
 
-				try {
+				writer.getObservable().subscribe(subscriber);
 
-					writer.getObservable().subscribe(subscriber);
+				opener.process(object);
+				opener.closeStream();
 
-					opener.process(object);
-					opener.closeStream();
+				morphContext.stop();
+			} catch (final Exception e) {
 
-					morphContext.stop();
-				} catch (final Exception e) {
-
-					writer.propagateError(e);
-				}
+				writer.propagateError(e);
 			}
-		});
+		}));
 	}
 
 	private static Optional<String> getStringParameter(final Configuration configuration, final String key) throws DMPConverterException {

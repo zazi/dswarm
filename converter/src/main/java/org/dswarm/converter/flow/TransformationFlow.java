@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Scheduler;
 import rx.observables.ConnectableObservable;
+import rx.observables.SyncOnSubscribe;
 import rx.schedulers.Schedulers;
 
 import javax.ws.rs.core.Response;
@@ -306,17 +307,17 @@ public abstract class TransformationFlow<RESULTFORMAT> {
 
 	protected abstract ConnectableObservable<RESULTFORMAT> transformResultModel(final Observable<org.dswarm.persistence.model.internal.Model> model);
 
-	protected Observable.OnSubscribe<RESULTFORMAT> wireTransformationFlowMorphConnector(final boolean doNotReturnJsonToCaller,
-	                                                                                    final Optional<Observable<RESULTFORMAT>> optionalResultObservable,
-	                                                                                    final Optional<ConnectableObservable<RESULTFORMAT>> optionalConnectableResultObservable,
-	                                                                                    final Scheduler scheduler,
-	                                                                                    final Observable<Response> writeResponse,
-	                                                                                    final Context morphContext,
-	                                                                                    final Observable<Tuple2<String, JsonNode>> tuples,
-	                                                                                    final ObjectPipe<Tuple2<String, JsonNode>, StreamReceiver> opener,
-	                                                                                    final GDMModelReceiver writer) {
+	protected SyncOnSubscribe<Void, RESULTFORMAT> wireTransformationFlowMorphConnector(final boolean doNotReturnJsonToCaller,
+	                                                                                   final Optional<Observable<RESULTFORMAT>> optionalResultObservable,
+	                                                                                   final Optional<ConnectableObservable<RESULTFORMAT>> optionalConnectableResultObservable,
+	                                                                                   final Scheduler scheduler,
+	                                                                                   final Observable<Response> writeResponse,
+	                                                                                   final Context morphContext,
+	                                                                                   final Observable<Tuple2<String, JsonNode>> tuples,
+	                                                                                   final ObjectPipe<Tuple2<String, JsonNode>, StreamReceiver> opener,
+	                                                                                   final GDMModelReceiver writer) {
 
-		return subscriber -> {
+		return SyncOnSubscribe.createStateless(subscriber -> {
 
 			final Observable<RESULTFORMAT> finalResultObservable;
 
@@ -351,7 +352,7 @@ public abstract class TransformationFlow<RESULTFORMAT> {
 			}).doOnCompleted(opener::closeStream)
 					.doOnCompleted(() -> LOG.info("received '{}' records in transformation engine", counter.get()))
 					.subscribe(opener::process, writer::propagateError, () -> LOG.debug("DONE"));
-		};
+		});
 	}
 
 	protected abstract AndThenWaitFor<RESULTFORMAT, Response> concatStreams(final Observable<Response> writeResponse);
