@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
 import com.google.inject.ProvisionException;
 import org.culturegraph.mf.stream.source.ResourceOpener;
 import org.culturegraph.mf.types.Triple;
@@ -33,7 +33,6 @@ import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 import rx.Observable;
-import rx.functions.Func1;
 
 import org.dswarm.converter.DMPConverterException;
 import org.dswarm.converter.GuicedTest;
@@ -110,6 +109,59 @@ public class CSVSourceResourceTriplesFlowTest extends GuicedTest {
 		final Matcher<String> predicateMatcher = CoreMatchers.anyOf(CoreMatchers.equalTo("spalte1"), CoreMatchers.equalTo("spalte2"));
 
 		testFlow(flow, "space_ending.csv", 2, 2, predicateMatcher);
+	}
+
+	@Test
+	public void testEndToEnd4() throws Exception {
+
+		/*
+	    "quote_character": "\"",
+	    "first_row_is_headings": false,
+	    // "column_names": "columnN",
+	    "row_delimiter": "\\r\\n",
+	    "ignore_lines": "1"
+		 */
+
+		final String uuid = UUIDService.getUUID(Configuration.class.getSimpleName());
+
+		final Configuration configuration = new Configuration(uuid);
+
+		configuration.addParameter(ConfigurationStatics.COLUMN_DELIMITER, new TextNode(","));
+		configuration.addParameter(ConfigurationStatics.ENCODING, new TextNode("UTF-8"));
+		configuration.addParameter(ConfigurationStatics.ESCAPE_CHARACTER, new TextNode("\\"));
+		configuration.addParameter(ConfigurationStatics.ROW_DELIMITER, new TextNode("\r\n"));
+		// remove following line, of quote character should be null
+		configuration.addParameter(ConfigurationStatics.QUOTE_CHARACTER, new TextNode("\""));
+		configuration.addParameter(ConfigurationStatics.FIRST_ROW_IS_HEADINGS, BooleanNode.FALSE);
+		configuration.addParameter(ConfigurationStatics.IGNORE_LINES, new IntNode(1));
+
+		final CSVSourceResourceTriplesFlow flow = injector
+				.getInstance(CSVResourceFlowFactory.class)
+				.fromConfiguration(configuration);
+
+		@SuppressWarnings("unchecked")
+		final Matcher<String> predicateMatcher = CoreMatchers.anyOf(
+				CoreMatchers.equalTo("column1"),
+				CoreMatchers.equalTo("column2"),
+				CoreMatchers.equalTo("column3"),
+				CoreMatchers.equalTo("column4"),
+				CoreMatchers.equalTo("column5"),
+				CoreMatchers.equalTo("column6"),
+				CoreMatchers.equalTo("column7"),
+				CoreMatchers.equalTo("column8"),
+				CoreMatchers.equalTo("column9"),
+				CoreMatchers.equalTo("column10"),
+				CoreMatchers.equalTo("column11"),
+				CoreMatchers.equalTo("column12"),
+				CoreMatchers.equalTo("column13"),
+				CoreMatchers.equalTo("column14"),
+				CoreMatchers.equalTo("column15"),
+				CoreMatchers.equalTo("column16"),
+				CoreMatchers.equalTo("column17"),
+				CoreMatchers.equalTo("column18"),
+				CoreMatchers.equalTo("column19"));
+
+		testFlow(flow, "excerpt_w_linebreak_in_value.csv", 3, 19, predicateMatcher);
 	}
 
 	@Test

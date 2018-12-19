@@ -131,6 +131,45 @@ public abstract class AbstractCSVResourceFlow<T> {
 		this.dataModelSchemaBaseURI = null;
 	}
 
+	public AbstractCSVResourceFlow(final String encoding,
+	                               final Character escapeCharacter,
+	                               final Character quoteCharacter,
+	                               final Character columnDelimiter,
+	                               final String rowDelimiter,
+	                               final Boolean firstRowIsHeadings,
+	                               final Integer ignoreLines) {
+
+		this.encoding = encoding;
+		this.escapeCharacter = escapeCharacter;
+		this.quoteCharacter = quoteCharacter;
+		this.columnDelimiter = columnDelimiter;
+		this.rowDelimiter = rowDelimiter;
+
+		this.discardRows = ConfigurationStatics.DEFAULT_DISCARD_ROWS;
+		this.atMost = Optional.absent();
+
+		if(firstRowIsHeadings != null) {
+
+			this.firstRowIsHeaders = firstRowIsHeadings;
+		} else {
+
+			this.firstRowIsHeaders = ConfigurationStatics.DEFAULT_FIRST_ROW_IS_HEADINGS;
+		}
+
+
+
+		if(ignoreLines != null) {
+
+			this.ignoreLines = ignoreLines;
+		} else {
+
+			this.ignoreLines = ConfigurationStatics.DEFAULT_IGNORE_LINES;
+		}
+
+		this.dataModelBaseURI = null;
+		this.dataModelSchemaBaseURI = null;
+	}
+
 	public AbstractCSVResourceFlow(final Configuration configuration) throws DMPConverterException {
 
 		if (configuration == null) {
@@ -154,7 +193,7 @@ public abstract class AbstractCSVResourceFlow<T> {
 
 		this.encoding = encodingOptional.or(ConfigurationStatics.DEFAULT_ENCODING);
 		this.escapeCharacter = escapeCharacterOptional.or(ConfigurationStatics.DEFAULT_ESCAPE_CHARACTER);
-		this.quoteCharacter = quoteCharacterOptional.or(ConfigurationStatics.DEFAULT_QUOTE_CHARACTER);
+		this.quoteCharacter = quoteCharacterOptional.orNull();
 		this.columnDelimiter = columnDelimiterOptional.or(ConfigurationStatics.DEFAULT_COLUMN_DELIMITER);
 		this.rowDelimiter = rowDelimiterOptional.or(ConfigurationStatics.DEFAULT_ROW_DELIMITER);
 		this.ignoreLines = ignoreLinesOptional.or(ConfigurationStatics.DEFAULT_IGNORE_LINES);

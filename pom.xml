@@ -46,7 +46,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<checkstyle.config.location>codequality/checkstyle.xml</checkstyle.config.location>
 		<version.apache.commons>3.6</version.apache.commons>
-		<version.commons-csv>1.4</version.commons-csv>
+		<version.commons-csv>1.5</version.commons-csv>
 		<version.commons-io>2.5</version.commons-io>
 		<version.dswarm.common>0.0.3.4-SNAPSHOT</version.dswarm.common>
 		<version.dswarm.graph.json>0.0.6-SNAPSHOT</version.dswarm.graph.json>

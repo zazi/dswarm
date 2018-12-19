@@ -64,7 +64,7 @@ public final class CsvReader implements Reader<CSVRecord> {
 		this(new CsvLineReader(escapeCharacter, quoteCharacter, columnSeparator, lineEnding));
 	}
 
-	public CsvReader(final char escapeCharacter, final char quoteCharacter, final char columnDelimiter, final String rowDelimiter,
+	public CsvReader(final char escapeCharacter, final Character quoteCharacter, final char columnDelimiter, final String rowDelimiter,
 			final int ignoreLines, final int discardRows, final Optional<Integer> atMost) {
 
 		this(new CsvLineReader(escapeCharacter, quoteCharacter, columnDelimiter, rowDelimiter, ignoreLines, discardRows, atMost));

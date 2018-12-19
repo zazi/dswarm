@@ -36,6 +36,15 @@ public interface CSVResourceFlowFactory {
 			@Assisted("columnDelimiter") final Character columnDelimiter,
 			@Assisted("rowDelimiter") final String rowDelimiter);
 
+	CSVSourceResourceTriplesFlow fromConfigurationParameters(
+			@Assisted("encoding") final String encoding,
+			@Assisted("escapeCharacter") final Character escapeCharacter,
+			@Assisted("quoteCharacter") final Character quoteCharacter,
+			@Assisted("columnDelimiter") final Character columnDelimiter,
+			@Assisted("rowDelimiter") final String rowDelimiter,
+			@Assisted("firstRowIsHeadings") final Boolean firstRowIsHeadings,
+			@Assisted("ignoreLines") final Integer ignoreLines);
+
 	CSVSourceResourceCSVJSONPreviewFlow jsonPreview(final Configuration configuration);
 
 	CSVSourceResourceCSVJSONPreviewFlow jsonPreview(

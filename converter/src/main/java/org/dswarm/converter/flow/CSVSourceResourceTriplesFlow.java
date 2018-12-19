@@ -48,6 +48,18 @@ public class CSVSourceResourceTriplesFlow extends AbstractCSVResourceFlow<Observ
 	}
 
 	@AssistedInject
+	private CSVSourceResourceTriplesFlow(
+			@Assisted("encoding") final String encoding,
+			@Assisted("escapeCharacter") final Character escapeCharacter,
+			@Assisted("quoteCharacter") final Character quoteCharacter,
+			@Assisted("columnDelimiter") final Character columnDelimiter,
+			@Assisted("rowDelimiter") final String rowDelimiter,
+			@Assisted("firstRowIsHeadings") final Boolean firstRowIsHeadings,
+			@Assisted("ignoreLines") final Integer ignoreLines) {
+		super(encoding, escapeCharacter, quoteCharacter, columnDelimiter, rowDelimiter, firstRowIsHeadings, ignoreLines);
+	}
+
+	@AssistedInject
 	private CSVSourceResourceTriplesFlow(@Assisted final Configuration configuration) throws DMPConverterException {
 		super(configuration);
 	}

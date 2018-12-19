@@ -48,7 +48,7 @@ import org.dswarm.persistence.model.resource.utils.ConfigurationStatics;
 public final class CsvLineReader extends DefaultObjectPipe<Reader, ObjectReceiver<CSVRecord>> {
 
 	private final char				escapeCharacter;
-	private final char				quoteCharacter;
+	private final Character			quoteCharacter;
 	private final char				columnSeparator;
 	private final String			lineEnding;
 	private final int				ignoreLines;
